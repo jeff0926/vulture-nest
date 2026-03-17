@@ -5,7 +5,12 @@
 // This service worker handles extension lifecycle only.
 // All vault operations happen in the sidepanel/content scripts.
 
-import { MESSAGE_TYPES, SECURITY } from '../lib/constants.js';
+// Inline constants (no ES module imports for service worker compatibility)
+const MESSAGE_TYPES = {
+  VAULT_UNLOCK: 'VAULT_UNLOCK',
+  VAULT_LOCK: 'VAULT_LOCK',
+  VAULT_STATUS: 'VAULT_STATUS'
+};
 
 /**
  * Extension Lifecycle
