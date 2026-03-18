@@ -101,6 +101,7 @@ class PassVaultApp {
     });
 
     document.getElementById('import-btn')?.addEventListener('click', () => {
+      console.log('[PassVault] Import Button Clicked (header)');
       this._showImportModal();
     });
 
@@ -113,6 +114,7 @@ class PassVaultApp {
     });
 
     document.getElementById('start-import-btn')?.addEventListener('click', () => {
+      console.log('[PassVault] Import Button Clicked');
       this._showImportModal();
     });
 
@@ -153,6 +155,11 @@ class PassVaultApp {
       option.addEventListener('click', () => {
         this.elements.importFileInput.click();
       });
+    });
+
+    // Import modal close button
+    document.getElementById('import-modal-close')?.addEventListener('click', () => {
+      this._hideImportModal();
     });
 
     // Custom events
@@ -485,7 +492,9 @@ class PassVaultApp {
    * Show import modal.
    */
   _showImportModal() {
+    console.log('[PassVault] Opening Import Modal');
     this.elements.importModal.classList.remove('hidden');
+    this.elements.importModal.classList.add('visible');
   }
 
   /**
@@ -493,6 +502,7 @@ class PassVaultApp {
    */
   _hideImportModal() {
     this.elements.importModal.classList.add('hidden');
+    this.elements.importModal.classList.remove('visible');
   }
 
   /**

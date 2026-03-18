@@ -299,8 +299,16 @@
 
   <!-- Import Modal (hidden by default) -->
   <div class="import-modal hidden" id="import-modal">
-    <div class="import-section">
+    <header class="modal-header">
       <h3>Import Passwords</h3>
+      <button class="modal-close" id="import-modal-close" title="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </header>
+    <div class="import-section">
 
       <div class="dropzone" id="import-dropzone">
         <div class="dropzone-icon">
