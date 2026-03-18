@@ -67,7 +67,13 @@ class ReadFlowApp {
       searchInput: document.getElementById('search-input'),
       importBtn: document.getElementById('import-btn'),
       startImportBtn: document.getElementById('start-import-btn'),
-      lockBtn: document.getElementById('lock-btn')
+      menuBtn: document.getElementById('menu-btn'),
+      statsBar: document.getElementById('stats-bar'),
+      statTotal: document.getElementById('stat-total'),
+      statUnread: document.getElementById('stat-unread'),
+      statTime: document.getElementById('stat-time'),
+      koboAction: document.getElementById('kobo-action'),
+      generateKoboBtn: document.getElementById('generate-kobo-btn')
     };
   }
 
@@ -85,8 +91,11 @@ class ReadFlowApp {
       this._renderArticleList();
     });
 
-    // Lock/Menu button
-    this.elements.lockBtn?.addEventListener('click', () => this._showOptionsMenu());
+    // Menu button
+    this.elements.menuBtn?.addEventListener('click', () => this._showOptionsMenu());
+
+    // Generate Kobo Digest (primary action)
+    this.elements.generateKoboBtn?.addEventListener('click', () => this._showKoboBridge());
 
     // Upgrade link (864zeros pricing modal)
     document.getElementById('upgrade-link')?.addEventListener('click', (e) => {
@@ -99,12 +108,39 @@ class ReadFlowApp {
    * Main render method
    */
   _render() {
+    // Update stats bar
+    this._updateStats();
+
     if (this.library.articles.length === 0) {
       this.elements.emptyState?.classList.remove('hidden');
+      this.elements.koboAction?.classList.add('hidden');
       this.elements.contentList.innerHTML = '';
     } else {
       this.elements.emptyState?.classList.add('hidden');
+      this.elements.koboAction?.classList.remove('hidden');
       this._renderArticleList();
+    }
+  }
+
+  /**
+   * Update stats bar
+   */
+  _updateStats() {
+    const stats = this.library.getStats ? this.library.getStats() : {
+      total: this.library.articles.length,
+      unread: this.library.articles.filter(a => a.status !== 'read').length,
+      totalReadingTime: this.library.articles.reduce((sum, a) => sum + (a.readingTimeMinutes || 5), 0)
+    };
+
+    if (this.elements.statTotal) {
+      this.elements.statTotal.textContent = `${stats.total} articles`;
+    }
+    if (this.elements.statUnread) {
+      this.elements.statUnread.textContent = `${stats.unread} unread`;
+    }
+    if (this.elements.statTime) {
+      const hours = Math.round(stats.totalReadingTime / 60);
+      this.elements.statTime.textContent = `${hours}h reading`;
     }
   }
 

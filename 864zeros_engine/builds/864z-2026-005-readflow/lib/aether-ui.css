@@ -1,9 +1,9 @@
 /**
- * Aether UI — Security-Hardened Design System
+ * Aether UI — 864zeros Design System
  * 864zeros Build Kit v2.0
  *
- * Dark theme optimized for security/vault applications.
- * Based on OIA Design System with security-focused color palette.
+ * Dark theme optimized for reader and productivity applications.
+ * Based on OIA Design System with accent-focused color palette.
  */
 
 /* ============================================
@@ -756,4 +756,230 @@ select:disabled {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ============================================
+   READER COMPONENTS (ReadFlow)
+   Harvested from Pocket Alt UI
+   ============================================ */
+
+/* Stats Bar */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.stat-divider {
+  color: var(--border-color);
+}
+
+/* Article List */
+.article-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-sm);
+}
+
+/* Article Card */
+.article-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.article-card:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.article-card + .article-card {
+  margin-top: var(--space-sm);
+}
+
+.article-card.read {
+  opacity: 0.6;
+}
+
+.article-favicon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  font-size: var(--text-lg);
+  flex-shrink: 0;
+}
+
+.article-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.article-title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: var(--space-xs);
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.article-domain {
+  color: var(--accent-primary);
+}
+
+.article-time {
+  color: var(--text-muted);
+}
+
+.article-folder {
+  padding: 2px var(--space-sm);
+  background: var(--accent-subtle);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--accent-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Kobo Action */
+.kobo-action {
+  padding: var(--space-md);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+}
+
+.kobo-action .btn-accent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  font-weight: var(--weight-semibold);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.kobo-action .btn-accent:hover {
+  background: var(--accent-secondary);
+  box-shadow: var(--shadow-glow);
+}
+
+.kobo-hint {
+  margin-top: var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Empty Search State */
+.empty-search {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-muted);
+}
+
+/* Kobo Bridge Modal */
+.kobo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--space-md);
+}
+
+.kobo-modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  max-width: 400px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.kobo-digest-info {
+  background: var(--accent-subtle);
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.digest-count {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--accent-primary);
+}
+
+.digest-label {
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.kobo-qr {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  margin: var(--space-md);
+}
+
+.kobo-filename {
+  background: var(--bg-tertiary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-align: center;
+  margin: 0 var(--space-md);
+}
+
+.kobo-actions {
+  padding: var(--space-md);
+}
+
+.kobo-help {
+  padding: 0 var(--space-md) var(--space-md);
+}
+
+.kobo-help summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 }

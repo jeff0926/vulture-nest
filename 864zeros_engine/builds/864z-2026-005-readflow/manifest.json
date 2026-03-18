@@ -39,19 +39,19 @@
     "open_in_tab": true
   },
   "commands": {
-    "lock-vault": {
+    "generate-digest": {
+      "suggested_key": {
+        "default": "Alt+Shift+G",
+        "mac": "Alt+Shift+G"
+      },
+      "description": "__MSG_cmdGenerateDigest__"
+    },
+    "open-library": {
       "suggested_key": {
         "default": "Alt+Shift+L",
         "mac": "Alt+Shift+L"
       },
-      "description": "__MSG_cmdLockVault__"
-    },
-    "open-vault": {
-      "suggested_key": {
-        "default": "Alt+Shift+P",
-        "mac": "Alt+Shift+P"
-      },
-      "description": "__MSG_cmdOpenVault__"
+      "description": "__MSG_cmdOpenLibrary__"
     }
   }
 }

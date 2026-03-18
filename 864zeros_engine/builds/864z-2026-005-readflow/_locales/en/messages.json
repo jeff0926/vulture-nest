@@ -4,15 +4,15 @@
     "description": "Extension name"
   },
   "extDescription": {
-    "message": "Local-first read-it-later with instant Instapaper import. No cloud sync required.",
+    "message": "Local-first read-it-later with instant Instapaper import and Kobo e-reader sync.",
     "description": "Extension description"
   },
-  "cmdLockVault": {
-    "message": "Lock vault",
-    "description": "Lock keyboard shortcut"
+  "cmdGenerateDigest": {
+    "message": "Generate Kobo Digest",
+    "description": "Generate ePub digest keyboard shortcut"
   },
-  "cmdOpenVault": {
-    "message": "Open ReadFlow",
-    "description": "Open keyboard shortcut"
+  "cmdOpenLibrary": {
+    "message": "Open Library",
+    "description": "Open ReadFlow library keyboard shortcut"
   }
 }
