@@ -18,3 +18,7 @@ Thumbs.db
 # Ignore folder
 IGNORE/
 nul
+
+# Environment
+.env
+*.env
