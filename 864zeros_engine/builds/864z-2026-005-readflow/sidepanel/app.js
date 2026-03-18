@@ -261,9 +261,9 @@ class ReadFlowApp {
 
             <input type="file" id="import-file-input" accept=".csv" class="hidden">
 
-            <div class="import-info mt-lg">
+            <div class="import-info">
               <h4>How to export from Instapaper:</h4>
-              <ol class="text-secondary" style="padding-left: 20px; margin-top: 8px;">
+              <ol>
                 <li>Go to instapaper.com/user</li>
                 <li>Click "Download .CSV file"</li>
                 <li>Drop the file here</li>
@@ -708,54 +708,15 @@ class ReadFlowApp {
   }
 }
 
-// Additional styles for new components
+// Additional styles for dynamically created modals (rescue audit, options menu)
+// Core styles are in aether-ui.css
 const additionalStyles = `
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: var(--z-modal);
-    padding: var(--space-md);
-  }
-
-  .modal {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    max-width: 400px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
+  /* Modal variant for larger content */
   .modal-large {
     max-width: 480px;
   }
 
-  .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-md);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  .modal-header h2 {
-    font-size: var(--text-md);
-    margin: 0;
-  }
-
-  .modal-content {
-    padding: var(--space-lg);
-  }
-
-  /* Rescue Hero */
+  /* Rescue Audit Modal - "Aha Moment" */
   .rescue-hero {
     text-align: center;
     padding: var(--space-lg) 0;
@@ -776,6 +737,7 @@ const additionalStyles = `
 
   .rescue-title {
     font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
     margin: 0 0 var(--space-xs);
   }
 
@@ -784,7 +746,6 @@ const additionalStyles = `
     margin: 0;
   }
 
-  /* Stats Grid */
   .rescue-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -820,7 +781,6 @@ const additionalStyles = `
     margin-top: var(--space-xs);
   }
 
-  /* Breakdown */
   .rescue-breakdown {
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
@@ -839,107 +799,11 @@ const additionalStyles = `
     border-top: 1px solid var(--border-subtle);
   }
 
-  /* Article List */
-  .article-card {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all var(--transition-fast);
+  .rescue-actions {
+    margin-top: var(--space-lg);
   }
 
-  .article-card:hover {
-    background: var(--bg-hover);
-    border-color: var(--border-color);
-  }
-
-  .article-card.read {
-    opacity: 0.6;
-  }
-
-  .article-card + .article-card {
-    margin-top: var(--space-sm);
-  }
-
-  .article-favicon {
-    font-size: 24px;
-    width: 40px;
-    text-align: center;
-  }
-
-  .article-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .article-title {
-    font-weight: var(--weight-medium);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .article-meta {
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-    display: flex;
-    gap: var(--space-sm);
-    margin-top: 2px;
-  }
-
-  .article-folder {
-    font-size: var(--text-xs);
-    color: var(--accent-primary);
-    background: var(--accent-subtle);
-    padding: 2px 8px;
-    border-radius: var(--radius-full);
-  }
-
-  /* Kobo Bridge */
-  .kobo-digest-info {
-    background: var(--accent-subtle);
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-lg);
-  }
-
-  .digest-count {
-    font-size: var(--text-3xl);
-    font-weight: var(--weight-bold);
-    color: var(--accent-primary);
-  }
-
-  .digest-label {
-    color: var(--text-secondary);
-    margin-top: var(--space-xs);
-  }
-
-  .kobo-qr {
-    display: flex;
-    justify-content: center;
-    padding: var(--space-lg);
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-lg);
-  }
-
-  .kobo-filename {
-    background: var(--bg-tertiary);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-  }
-
-  .kobo-help summary {
-    cursor: pointer;
-    font-size: var(--text-sm);
-  }
-
-  /* Options */
+  /* Options Menu Modal */
   .options-stats {
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
@@ -957,85 +821,8 @@ const additionalStyles = `
     border-top: 1px solid var(--border-subtle);
   }
 
-  /* Empty search */
-  .empty-search {
-    text-align: center;
-    padding: var(--space-2xl);
-  }
-
-  /* Import info */
-  .import-info h4 {
-    font-size: var(--text-sm);
-    margin-bottom: var(--space-sm);
-  }
-
-  .import-info ol {
-    font-size: var(--text-sm);
-    line-height: 1.6;
-  }
-
-  /* App header adjustments */
-  .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-md);
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-  }
-
-  .app-logo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-
-  .app-logo svg {
-    color: var(--accent-primary);
-  }
-
-  .app-logo span {
-    font-weight: var(--weight-semibold);
-  }
-
-  .header-actions {
-    display: flex;
-    gap: var(--space-xs);
-  }
-
-  .app-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: var(--space-md);
-  }
-
-  .search-container {
-    margin-bottom: var(--space-md);
-  }
-
-  .search-input {
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-  }
-
-  .trust-footer {
-    padding: var(--space-md);
-    border-top: 1px solid var(--border-color);
-    text-align: center;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: var(--space-2xl) var(--space-lg);
-  }
-
-  .empty-icon {
-    color: var(--text-muted);
-    margin-bottom: var(--space-lg);
+  .options-actions {
+    margin-top: var(--space-lg);
   }
 `;
 
