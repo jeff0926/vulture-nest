@@ -1,176 +1,216 @@
 # 864zeros Factory Inventory
 
-> Generated: 2026-03-18 | Total Extensions: 17
-
-## Executive Summary
-
-This inventory catalogs all harvestable components across the 864zeros extension portfolio. Use this to avoid "Frankenstein" builds by sourcing proven UI patterns and logic bricks from existing stable extensions.
+> Generated: 2026-03-18 | Version: 1.1.0 | Total Extensions: 17
 
 ---
 
-## Extension Registry
+## Architecture Overview
 
-| ID | Name | Purpose | Brand | UI Type | Status |
-|----|------|---------|-------|---------|--------|
-| bible-insight | Bible Insight | Bible Study / Sermon Notes | FHG | SidePanel | Stable |
-| clipboard | ClipBoard | Clipboard Manager | OIA | SidePanel | Stable |
-| tabvault | TabVault | Tab Manager | OIA | SidePanel | Stable |
-| signal2noise | Signal2Noise | Task Prioritization | OIA | SidePanel | Stable |
-| tuneout2focusin | TuneOut2FocusIn | Background Noise | OIA | SidePanel | Stable |
-| time2focus | Time2Focus | Focus Timer | OIA | SidePanel | Stable |
-| 864z-chronical | Chronicle | AI Conversation History | 864z | SidePanel | Stable |
-| who-is-watching | Who Is Watching | Tracker Detector | OIA | SidePanel | Stable |
-| oia-focus-note | OIA Focus Note | Note Taking | OIA | SidePanel | Minimal |
-| oia-focus-timer | OIA Focus Timer | Timer | OIA | SidePanel | Minimal |
-| oia-focus-wall | OIA Focus Wall | Wallpaper | OIA | SidePanel | Minimal |
-| oia-focus-sound | OIA Focus Sound | Sound Player | OIA | SidePanel | Minimal |
-| oia-focus-signal | OIA Focus Signal | Notifications | OIA | SidePanel | Minimal |
-| 864z-2026-002 | ReadVault (Pocket Alt) | Reader | 864z | SidePanel | Active |
-| 864z-2026-003 | InstaRescue | Data Rescue | 864z | Library | Scaffold |
-| 864z-2026-004 | PassVault | Password Manager | 864z | SidePanel | Active |
-| 864z-2026-005 | ReadFlow | Reader / Kobo Sync | 864z | SidePanel | Active |
+```
+864zeros Extension Factory
+==========================
+
+WAREHOUSE (Stable Library)              PRODUCTION FLOOR (Active Projects)
+C:\Users\I820965\dev\864zeros\          C:\Users\I820965\dev\vulture-nest\
+extensions\                             864zeros_engine\builds\
+------------------------------          ----------------------------------
+13 Harvestable Sources                  4 Active Vulture Strikes
+Proven, stable components               Current development builds
+DO NOT MODIFY - HARVEST ONLY            ACTIVE DEVELOPMENT ZONE
+```
 
 ---
 
-## Harvestable Features by Category
+## WAREHOUSE: Harvestable Sources
+
+> **Location:** `C:\Users\I820965\dev\864zeros\extensions\`
+> **Purpose:** Proven, stable components ready for harvest. DO NOT modify these directly.
+
+| ID | Name | Purpose | Brand | Status | Key Harvestables |
+|----|------|---------|-------|--------|------------------|
+| bible-insight | Bible Insight | Bible Study | FHG | Stable | verse-detector.js, YouTube transcript |
+| clipboard | ClipBoard | Clipboard Manager | OIA | Stable | google-drive/, pdf-generator.js, ExtPay |
+| tabvault | TabVault | Tab Manager | OIA | Stable | Tab mirroring, OneTab import |
+| signal2noise | Signal2Noise | Task Prioritization | OIA | Stable | Signal pill UI, Accordion list |
+| tuneout2focusin | TuneOut2FocusIn | Background Noise | OIA | Stable | Offscreen audio pattern |
+| time2focus | Time2Focus | Focus Timer | OIA | Stable | chrome.alarms, Panel flash |
+| 864z-chronical | Chronicle | AI Conversation History | 864z | Stable | AI scraping patterns, db.js |
+| who-is-watching | Who Is Watching | Tracker Detector | OIA | Stable | detector.js, JS API hooking |
+| oia-focus-note | OIA Focus Note | Note Taking | OIA | Minimal | - |
+| oia-focus-timer | OIA Focus Timer | Timer | OIA | Minimal | - |
+| oia-focus-wall | OIA Focus Wall | Wallpaper | OIA | Minimal | - |
+| oia-focus-sound | OIA Focus Sound | Sound Player | OIA | Minimal | Audio resource pattern |
+| oia-focus-signal | OIA Focus Signal | Notifications | OIA | Minimal | - |
+
+---
+
+## PRODUCTION FLOOR: Active Projects
+
+> **Location:** `C:\Users\I820965\dev\vulture-nest\864zeros_engine\builds\`
+> **Purpose:** Current Vulture Strike builds under active development.
+
+| Strike | Name | Purpose | Status | Issues |
+|--------|------|---------|--------|--------|
+| 864z-2026-002 | ReadVault (Pocket Alt) | Reader | Active | Best Reader UI source |
+| 864z-2026-003 | InstaRescue | Data Rescue | Scaffold | Library only |
+| 864z-2026-004 | PassVault | Password Manager | Active | Ready for testing |
+| 864z-2026-005 | ReadFlow | Reader / Kobo Sync | Active | **UI inherited from PassVault - needs Reader icons** |
+
+---
+
+## Harvestable Bricks by Category
 
 ### PARSERS (Data Import)
 
-| Brick | Source | Formats Supported | Harvest For |
-|-------|--------|-------------------|-------------|
-| `password-parser.js` | PassVault | Dashlane, LastPass, 1Password, CSV | Any password/credential import |
-| `instapaper-parser.js` | ReadFlow | Instapaper CSV | Read-it-later import |
-| `pocket-parser.js` | Pocket Alt | Pocket export | Read-it-later import |
-| `deep-parser.js` | InstaRescue | Generic CSV | Universal CSV parsing |
-| `verse-detector.js` | Bible Insight | Bible references (regex + NLP) | Religious/text apps |
+| Brick | Zone | Source | Formats |
+|-------|------|--------|---------|
+| `verse-detector.js` | Warehouse | Bible Insight | Bible references |
+| `password-parser.js` | Production | PassVault | Dashlane, LastPass, 1Password, CSV |
+| `instapaper-parser.js` | Production | ReadFlow | Instapaper CSV |
+| `pocket-parser.js` | Production | Pocket Alt | Pocket export |
+| `deep-parser.js` | Production | InstaRescue | Generic CSV |
 
 ### EXPORTERS (Data Export)
 
-| Brick | Source | Output Format | Harvest For |
-|-------|--------|---------------|-------------|
-| `epub-builder.js` | ReadFlow | ePub | E-reader export, document generation |
-| `recovery-pdf.js` | PassVault | PDF | Recovery documents, reports |
-| `pdf-generator.js` | ClipBoard | PDF | Generic PDF generation |
-| `qr-generator.js` | ReadFlow | QR Code (SVG) | Wireless transfer, sharing |
+| Brick | Zone | Source | Output Format |
+|-------|------|--------|---------------|
+| `pdf-generator.js` | Warehouse | ClipBoard | PDF |
+| `epub-builder.js` | Production | ReadFlow | ePub |
+| `recovery-pdf.js` | Production | PassVault | PDF |
+| `qr-generator.js` | Production | ReadFlow | QR Code SVG |
 
 ### SECURITY
 
-| Brick | Source | Features | Harvest For |
-|-------|--------|----------|-------------|
-| `crypto-vault.js` | PassVault | AES-GCM encryption, key derivation | Any local-first security |
-| `breach-checker.js` | PassVault | HaveIBeenPwned API integration | Password audits |
-| `detector.js` | Who Is Watching | Tracker/fingerprint detection | Privacy tools |
-| `redactor.js` | ClipBoard | Content redaction | Privacy/security features |
+| Brick | Zone | Source | Features |
+|-------|------|--------|----------|
+| `detector.js` | Warehouse | Who Is Watching | Tracker detection |
+| `redactor.js` | Warehouse | ClipBoard | Content redaction |
+| `crypto-vault.js` | Production | PassVault | AES-GCM encryption |
+| `breach-checker.js` | Production | PassVault | HaveIBeenPwned API |
 
 ### STORAGE & SYNC
 
-| Brick | Source | Features | Harvest For |
-|-------|--------|----------|-------------|
-| `db.js` | Multiple | IndexedDB wrapper | Any local storage |
-| `backup.js` | ClipBoard | JSON export/import | Data portability |
-| `google-drive/` | ClipBoard | OAuth2 + Drive API | Cloud backup |
-| `store.js` | Pocket Alt | State management | App state |
+| Brick | Zone | Source | Features |
+|-------|------|--------|----------|
+| `db.js` | Both | Multiple | IndexedDB wrapper |
+| `backup.js` | Warehouse | ClipBoard | Export/Import |
+| `google-drive/` | Warehouse | ClipBoard | Cloud sync, OAuth2 |
 
 ### UI SYSTEMS
 
-| Brick | Source | Features | Harvest For |
-|-------|--------|----------|-------------|
-| `oia-design-system.css` | Multiple | Dark theme, typography, cards, forms | OIA brand apps |
-| `aether-ui.css` | ReadFlow | Brand footer, modals, lists | 864zeros brand apps |
-| `BRK-PRICING-001.js` | PassVault | Pricing modal controller | Monetization |
-| `864z-core.js` | Build Kit | Brand constants, legal URLs | All 864zeros apps |
+| Brick | Zone | Source | Features |
+|-------|------|--------|----------|
+| `oia-design-system.css` | Warehouse | Multiple | Dark theme, Typography |
+| `aether-ui.css` | Production | ReadFlow | Brand footer, Modals |
+| `BRK-PRICING-001.js` | Production | Build Kit | Pricing modal controller |
+| `864z-core.js` | Production | Build Kit | Brand constants |
 
 ### AUDIO
 
-| Brick | Source | Features | Harvest For |
-|-------|--------|----------|-------------|
-| Offscreen audio pattern | TuneOut2FocusIn | MV3 background audio playback | Any audio app |
-| Alert sounds | Time2Focus | Chime, bowl, raindrop, bell | Notifications |
+| Brick | Zone | Source | Features |
+|-------|------|--------|----------|
+| Offscreen audio | Warehouse | TuneOut2FocusIn | MV3 background playback |
+| Alert sounds | Warehouse | Time2Focus | Chime, bowl, bell |
 
 ---
 
-## UI Component Patterns
+## Harvest Guide
 
-### READER UI (Harvest from Pocket Alt / ReadFlow)
+### Reader UI (For ReadFlow Fix)
 
-| Component | Source | Description |
-|-----------|--------|-------------|
-| Article Card | Pocket Alt | Favicon + title + domain + reading time |
-| Article List | ReadFlow | Scrollable list with folder badges |
-| Empty State | ReadFlow | Icon + title + CTA button |
-| Search Bar | Both | Input with search icon prefix |
+**Recommended Source:** `864z-2026-002-pocket-alt` (Production Floor)
 
-**RECOMMENDATION FOR READFLOW:** Replace the current "vault" icons (lock icon in header/logo) with Reader-appropriate icons (book/article). Harvest the article card pattern from Pocket Alt for consistent reader UX.
+```
+Path: vulture-nest\864zeros_engine\builds\864z-2026-002-pocket-alt\sidepanel\
+```
 
-### SECURITY UI (Harvest from PassVault)
+| Component | File | Description |
+|-----------|------|-------------|
+| Article Card | main.js | Favicon + title + domain + reading time |
+| Article List | main.js | Scrollable list with folder badges |
+| Empty State | index.html | Book icon + "Your reading list is empty" |
+| Search Bar | index.html | Input with search icon |
 
-| Component | Source | Description |
-|-----------|--------|-------------|
-| Password Card | PassVault | Site favicon + username + strength indicator |
-| Audit Modal | PassVault | Statistics grid + breakdown rows + savings banner |
-| Import Modal | PassVault | Dropzone + source selection (Dashlane/LastPass/etc) |
-| Lock Overlay | PassVault | Full-screen lock with unlock form |
+### Security UI (PassVault pattern)
 
-### FOCUS UI (Harvest from Time2Focus / Signal2Noise)
+**Recommended Source:** `864z-2026-004-passvault` (Production Floor)
 
-| Component | Source | Description |
-|-----------|--------|-------------|
-| Preset Buttons | Time2Focus | 2x2 grid of large tap targets |
-| Signal Pill | Signal2Noise | Horizontal bar showing priority items |
-| Accordion List | Signal2Noise | Collapsible note cards |
-| Flash Overlay | Time2Focus | Gentle pulse animation on completion |
+```
+Path: vulture-nest\864zeros_engine\builds\864z-2026-004-passvault\sidepanel\
+```
 
-### BRAND FOOTER (Universal)
+| Component | Description |
+|-----------|-------------|
+| Password Card | Site favicon + username + strength indicator |
+| Audit Modal | Statistics grid + breakdown + savings banner |
+| Import Modal | Dropzone + source selection |
+| Lock Overlay | Full-screen lock with unlock form |
 
-| Component | Source | Description |
-|-----------|--------|-------------|
-| Brand Footer | aether-ui.css | "864zeros" logo + OIA mission + legal links + Upgrade |
-| Pricing Modal | BRK-PRICING-001.js | Free/Pro $12/mo/Lifetime $150 tiers |
+### Cloud Sync
 
----
+**Recommended Source:** `clipboard` (Warehouse)
 
-## Priority Harvest List (ReadFlow Fix)
+```
+Path: 864zeros\extensions\clipboard\lib\google-drive\
+```
 
-To fix ReadFlow's "Frankenstein" UI, harvest these components:
+| Component | Description |
+|-----------|-------------|
+| OAuth2 Auth | Google identity flow |
+| Drive API | appdata folder sync |
+| Sync Status | UI indicators |
 
-1. **Article Card UI** from `864z-2026-002-pocket-alt/sidepanel/`
-   - Proper favicon handling
-   - Domain extraction
-   - Reading time display
-   - Folder badge
+### Payments
 
-2. **Empty State** from `864z-2026-002-pocket-alt/sidepanel/`
-   - Book/article icon (NOT vault icon)
-   - "Your reading list is empty" messaging
-   - Import CTA
+**Recommended Source:** `clipboard` (Warehouse)
 
-3. **Reader Icons** - Replace all lock/vault SVGs with:
-   - Book icon for logo
-   - Article/page icon for list items
-   - Download icon for export
+```
+Path: 864zeros\extensions\clipboard\lib\payments\
+```
 
-4. **Import Modal** - Keep current (already reader-appropriate)
-
-5. **Rescue Audit Modal** - Keep current (already excellent "Aha!" moment)
+| Component | Description |
+|-----------|-------------|
+| ExtPay.js | ExtensionPay integration |
+| tiers.js | Tier management |
 
 ---
 
-## File Locations
+## Priority Action: ReadFlow UI Fix
 
-### 864zeros/extensions/
+ReadFlow currently has PassVault UI DNA (vault icons, lock metaphors). To fix:
+
+### Harvest from Pocket Alt (Production Floor):
+1. **Article Card UI** - `sidepanel/main.js`
+2. **Empty State** - `sidepanel/index.html` (book icon, not vault)
+3. **Header Logo** - Book/article icon, not lock
+
+### Replace in ReadFlow:
+1. Lock icon in header → Book icon
+2. "Vault" terminology → "Library" terminology
+3. Shield icons → Article/page icons
+
+---
+
+## File Paths Quick Reference
+
+### Warehouse (864zeros\extensions\)
 ```
 Bible-Insight/js/lib/verse-detector.js
 clipboard/lib/google-drive/
 clipboard/lib/pdf-generator.js
 clipboard/lib/backup.js
 clipboard/lib/oia-design-system.css
+clipboard/lib/payments/ExtPay.js
 who-is-watching/content/detector.js
+Time2Focus/offscreen/
+TuneOut2FocusIn/offscreen/
+864z-chronical/lib/db.js
 ```
 
-### vulture-nest/864zeros_engine/builds/
+### Production Floor (vulture-nest\864zeros_engine\builds\)
 ```
 864z-2026-002-pocket-alt/lib/pocket-parser.js
-864z-2026-002-pocket-alt/sidepanel/  (Reader UI)
+864z-2026-002-pocket-alt/sidepanel/  ← READER UI SOURCE
 864z-2026-003-instarescue/lib/deep-parser.js
 864z-2026-004-passvault/lib/password-parser.js
 864z-2026-004-passvault/lib/crypto-vault.js
@@ -179,25 +219,15 @@ who-is-watching/content/detector.js
 864z-2026-005-readflow/lib/instapaper-parser.js
 864z-2026-005-readflow/lib/epub-builder.js
 864z-2026-005-readflow/lib/qr-generator.js
-864z-2026-005-readflow/lib/article-fetcher.js
 ```
 
-### vulture-nest/864z-build-kit/
+### Build Kit (vulture-nest\864z-build-kit\)
 ```
 lib/864z-core.js
 lib/BRK-PRICING-001.js
 lib/aether-ui.css
 scripts/strike-bridge.js
 ```
-
----
-
-## Next Actions
-
-1. **ReadFlow UI Fix**: Harvest article card UI from Pocket Alt, replace vault icons with reader icons
-2. **Brick Standardization**: Move all harvestable bricks to `864z-build-kit/lib/`
-3. **Strike Bridge Update**: Add all bricks to `strike-bridge.js` scaffold generator
-4. **Version Bricks**: Add version numbers and changelog to each brick
 
 ---
 
