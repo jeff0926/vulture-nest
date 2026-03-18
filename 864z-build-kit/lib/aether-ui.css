@@ -1,12 +1,9 @@
-/* security-theme.css - Security-Hardened Dark Theme [DELTA]
- * 864zeros Build: 864z-2026-004
- * OIA Design System - Security Variant
+/**
+ * aether-ui.css - 864zeros OIA Design System
+ * Security-Hardened Dark Theme
  *
- * Design Principles:
- * - High contrast for accessibility
- * - Dark backgrounds reduce eye strain
- * - Green accents convey security/trust
- * - Minimalist, trust-based UI
+ * Brand: 864zeros LLC
+ * Mission: Organize Your Internal Architecture (OIA)
  */
 
 /* =====================================================
@@ -27,7 +24,7 @@
   --text-muted: #606070;
   --text-inverse: #0a0a0f;
 
-  /* Accent - Security green */
+  /* Accent - 864zeros Trust Green */
   --accent-primary: #00d084;
   --accent-hover: #00f09a;
   --accent-muted: rgba(0, 208, 132, 0.15);
@@ -106,6 +103,193 @@ body {
 }
 
 /* =====================================================
+   864ZEROS BRAND HEADER
+   ===================================================== */
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.brand-logo .logo-mark {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent-primary);
+  letter-spacing: -1px;
+}
+
+.brand-logo .logo-text {
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--text-primary);
+}
+
+.brand-logo .logo-divider {
+  color: var(--text-muted);
+  margin: 0 var(--space-sm);
+}
+
+.brand-logo .product-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Compact brand for sidepanels */
+.brand-header.compact {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.brand-header.compact .brand-logo .logo-mark,
+.brand-header.compact .brand-logo .logo-text {
+  font-size: 16px;
+}
+
+/* =====================================================
+   864ZEROS BRAND FOOTER
+   ===================================================== */
+
+.brand-footer {
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.brand-footer .footer-brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: var(--space-sm);
+}
+
+.brand-footer .footer-logo {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+
+.brand-footer .footer-company {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-secondary);
+}
+
+.brand-footer .footer-mission {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  font-style: italic;
+}
+
+.brand-footer .footer-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  font-size: 12px;
+}
+
+.brand-footer .footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.brand-footer .footer-links a:hover {
+  color: var(--accent-primary);
+}
+
+.brand-footer .footer-divider {
+  color: var(--border-color);
+}
+
+.brand-footer .footer-copyright {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Compact footer for sidepanels */
+.brand-footer.compact {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.brand-footer.compact .footer-brand {
+  margin-bottom: var(--space-xs);
+}
+
+.brand-footer.compact .footer-links {
+  margin-bottom: var(--space-xs);
+}
+
+/* =====================================================
+   APP HEADER (Product-specific)
+   ===================================================== */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.app-logo svg {
+  color: var(--accent-primary);
+}
+
+.app-logo span {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+/* =====================================================
+   TRUST FOOTER (Legacy - use brand-footer)
+   ===================================================== */
+
+.trust-footer {
+  padding: var(--space-md);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  background: var(--bg-secondary);
+}
+
+.trust-footer .trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.trust-footer .trust-badge svg {
+  color: var(--accent-primary);
+}
+
+/* =====================================================
    TYPOGRAPHY
    ===================================================== */
 
@@ -136,33 +320,6 @@ a:hover {
 
 code, .mono {
   font-family: var(--font-mono);
-}
-
-/* =====================================================
-   LAYOUT COMPONENTS
-   ===================================================== */
-
-.container {
-  max-width: 100%;
-  padding: var(--space-md);
-}
-
-.card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-}
-
-.card-elevated {
-  background: var(--bg-elevated);
-  box-shadow: var(--shadow-md);
-}
-
-.divider {
-  height: 1px;
-  background: var(--border-color);
-  margin: var(--space-md) 0;
 }
 
 /* =====================================================
@@ -274,7 +431,7 @@ input[type="password"] {
   letter-spacing: 2px;
 }
 
-label {
+label, .form-label {
   display: block;
   font-size: 13px;
   font-weight: 500;
@@ -282,8 +439,28 @@ label {
   margin-bottom: var(--space-xs);
 }
 
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
 /* =====================================================
-   BADGES & TAGS
+   CARDS
+   ===================================================== */
+
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.card-elevated {
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-md);
+}
+
+/* =====================================================
+   BADGES
    ===================================================== */
 
 .badge {
@@ -319,217 +496,7 @@ label {
 }
 
 /* =====================================================
-   SECURITY SCORE METER
-   ===================================================== */
-
-.security-score {
-  text-align: center;
-  padding: var(--space-lg);
-}
-
-.score-circle {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto var(--space-md);
-}
-
-.score-circle svg {
-  transform: rotate(-90deg);
-}
-
-.score-circle .track {
-  fill: none;
-  stroke: var(--bg-hover);
-  stroke-width: 8;
-}
-
-.score-circle .progress {
-  fill: none;
-  stroke-width: 8;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s ease;
-}
-
-.score-circle .progress.secure { stroke: var(--status-secure); }
-.score-circle .progress.warning { stroke: var(--status-warning); }
-.score-circle .progress.danger { stroke: var(--status-danger); }
-
-.score-value {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.score-label {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-/* =====================================================
-   AUDIT ISSUES LIST
-   ===================================================== */
-
-.audit-issue {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  background: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-sm);
-  border-left: 3px solid;
-}
-
-.audit-issue.danger {
-  border-color: var(--status-danger);
-}
-
-.audit-issue.warning {
-  border-color: var(--status-warning);
-}
-
-.audit-issue .issue-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.audit-issue.danger .issue-icon {
-  background: var(--status-danger-bg);
-  color: var(--status-danger);
-}
-
-.audit-issue.warning .issue-icon {
-  background: var(--status-warning-bg);
-  color: var(--status-warning);
-}
-
-.audit-issue .issue-content {
-  flex: 1;
-}
-
-.audit-issue .issue-title {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-}
-
-.audit-issue .issue-count {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.audit-issue .issue-entries {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  font-family: var(--font-mono);
-}
-
-/* =====================================================
-   VALUE SAVED CARD
-   ===================================================== */
-
-.value-saved {
-  background: var(--accent-subtle);
-  border: 1px solid var(--accent-muted);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  text-align: center;
-}
-
-.value-saved .value-amount {
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--accent-primary);
-}
-
-.value-saved .value-period {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.value-saved .value-comparison {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-top: var(--space-sm);
-}
-
-.value-saved .value-tagline {
-  font-size: 14px;
-  color: var(--accent-primary);
-  font-weight: 500;
-  margin-top: var(--space-md);
-}
-
-/* =====================================================
-   PASSWORD LIST
-   ===================================================== */
-
-.password-entry {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  background: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-sm);
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.password-entry:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-focus);
-}
-
-.password-entry .entry-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.password-entry .entry-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.password-entry .entry-title {
-  font-weight: 500;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.password-entry .entry-username {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
-.password-entry .entry-badges {
-  display: flex;
-  gap: 4px;
-}
-
-/* =====================================================
-   IMPORT DROPZONE
+   DROPZONE
    ===================================================== */
 
 .dropzone {
@@ -565,6 +532,117 @@ label {
 }
 
 /* =====================================================
+   MODAL OVERLAYS
+   ===================================================== */
+
+.import-modal,
+.audit-modal,
+.pricing-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-primary);
+  z-index: 50;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-normal), visibility var(--transition-normal);
+}
+
+.import-modal.visible,
+.audit-modal.visible,
+.pricing-modal.visible,
+.import-modal:not(.hidden),
+.audit-modal:not(.hidden),
+.pricing-modal:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* =====================================================
+   VALUE SAVED BANNER (Aha Moment)
+   ===================================================== */
+
+.value-saved {
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-muted);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.value-saved .value-amount {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.value-saved .value-period {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.value-saved .value-comparison {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+}
+
+.value-saved .value-tagline {
+  font-size: 14px;
+  color: var(--accent-primary);
+  font-weight: 500;
+  margin-top: var(--space-md);
+}
+
+/* =====================================================
+   TRUST BANNER
+   ===================================================== */
+
+.trust-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-muted);
+  border-radius: var(--radius-md);
+  color: var(--accent-primary);
+  font-size: 13px;
+}
+
+/* =====================================================
    TOAST NOTIFICATIONS
    ===================================================== */
 
@@ -581,6 +659,7 @@ label {
   align-items: center;
   gap: var(--space-sm);
   animation: slideIn 0.3s ease;
+  z-index: 1000;
 }
 
 @keyframes slideIn {
@@ -645,150 +724,18 @@ label {
 .mb-lg { margin-bottom: var(--space-lg); }
 .mb-xl { margin-bottom: var(--space-xl); }
 
+.p-sm { padding: var(--space-sm); }
 .p-md { padding: var(--space-md); }
 .p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
 
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-xs { gap: var(--space-xs); }
 .gap-sm { gap: var(--space-sm); }
 .gap-md { gap: var(--space-md); }
 
 .hidden { display: none !important; }
-
-/* =====================================================
-   MODAL OVERLAYS
-   ===================================================== */
-
-.import-modal,
-.audit-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg-primary);
-  z-index: 50;
-  overflow-y: auto;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--transition-normal), visibility var(--transition-normal);
-}
-
-.import-modal.visible,
-.audit-modal.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.import-modal:not(.hidden),
-.audit-modal:not(.hidden) {
-  opacity: 1;
-  visibility: visible;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md);
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
-}
-
-.modal-close:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-/* =====================================================
-   864ZEROS BRAND FOOTER
-   ===================================================== */
-
-.brand-footer {
-  padding: var(--space-md);
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
-  text-align: center;
-}
-
-.brand-footer .footer-brand {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 2px;
-  margin-bottom: var(--space-sm);
-}
-
-.brand-footer .footer-logo {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--accent-primary);
-}
-
-.brand-footer .footer-company {
-  font-size: 14px;
-  font-weight: 300;
-  color: var(--text-secondary);
-}
-
-.brand-footer .footer-mission {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: var(--space-sm);
-  font-style: italic;
-}
-
-.brand-footer .footer-links {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
-  font-size: 12px;
-}
-
-.brand-footer .footer-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.brand-footer .footer-links a:hover {
-  color: var(--accent-primary);
-}
-
-.brand-footer .footer-divider {
-  color: var(--border-color);
-}
-
-.brand-footer .footer-copyright {
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.brand-footer.compact {
-  padding: var(--space-sm) var(--space-md);
-}
-
-.brand-footer.compact .footer-brand {
-  margin-bottom: var(--space-xs);
-}
-
-.brand-footer.compact .footer-links {
-  margin-bottom: var(--space-xs);
-}

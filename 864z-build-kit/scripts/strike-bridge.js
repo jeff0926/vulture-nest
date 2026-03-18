@@ -27,7 +27,13 @@ const SECURITY_BRICKS = [
 ];
 
 const UI_BRICKS = [
-  'BRK-UI-IMPORT-001.js'
+  'BRK-UI-IMPORT-001.js',
+  'BRK-PRICING-001.js'
+];
+
+const CORE_BRICKS = [
+  '864z-core.js',
+  'aether-ui.css'
 ];
 
 // ============================================
@@ -147,7 +153,7 @@ async function generateScaffold(strike, outputDir) {
   generateIconGenerator(strike, outputDir);
   copySecurityBricks(strike, outputDir);
   copyUIBricks(strike, outputDir);
-  copyStylesheet(strike, outputDir);
+  copyCoreBricks(strike, outputDir);
 }
 
 // ============================================
@@ -160,6 +166,8 @@ function generateManifest(strike, outputDir) {
     name: "__MSG_extName__",
     version: "1.0.0",
     description: "__MSG_extDescription__",
+    author: "864zeros LLC",
+    homepage_url: "https://864zeros.com",
     default_locale: "en",
     icons: {
       "16": "assets/icon16.png",
@@ -494,14 +502,21 @@ function generateSidepanelHTML(strike, outputDir) {
       </div>
     </main>
 
-    <!-- Trust Footer -->
-    <footer class="trust-footer">
-      <div class="trust-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        Your data never leaves your device
+    <!-- 864zeros Brand Footer -->
+    <footer class="brand-footer compact">
+      <div class="footer-brand">
+        <span class="footer-logo">864</span>
+        <span class="footer-company">zeros</span>
       </div>
+      <div class="footer-mission">Organize Your Internal Architecture</div>
+      <div class="footer-links">
+        <a href="https://864zeros.com/privacy" target="_blank" rel="noopener">Privacy</a>
+        <span class="footer-divider">·</span>
+        <a href="https://864zeros.com/terms" target="_blank" rel="noopener">Terms</a>
+        <span class="footer-divider">·</span>
+        <a href="#" id="upgrade-link">Upgrade</a>
+      </div>
+      <div class="footer-copyright">© 2026 864zeros LLC. All rights reserved.</div>
     </footer>
   </div>
 
@@ -550,6 +565,7 @@ function generateSidepanelApp(strike, outputDir) {
 
 import { APP_NAME, TARGET_SAAS, TARGET_PRICE, VAULT_STATE } from '../lib/constants.js';
 import { ImportFlowController } from '../lib/BRK-UI-IMPORT-001.js';
+import { PricingModalController, injectPricingCSS } from '../lib/BRK-PRICING-001.js';
 
 /**
  * ${strike.name} Application Controller
@@ -558,6 +574,7 @@ class App {
   constructor() {
     this.state = VAULT_STATE.UNINITIALIZED;
     this.importFlow = null;
+    this.pricingModal = null;
   }
 
   async init() {
@@ -591,6 +608,17 @@ class App {
     });
 
     this.importFlow.init();
+
+    // Initialize pricing modal (BRK-PRICING-001)
+    injectPricingCSS();
+    this.pricingModal = new PricingModalController({
+      productName: APP_NAME,
+      currentTier: 'free',
+      onUpgrade: (tier) => {
+        console.log(\`[\${APP_NAME}] Upgrade to:\`, tier);
+      }
+    });
+
     this._attachListeners();
 
     console.log(\`[\${APP_NAME}] Ready\`);
@@ -599,6 +627,12 @@ class App {
   _attachListeners() {
     document.getElementById('lock-btn')?.addEventListener('click', () => {
       this._lock();
+    });
+
+    // Upgrade link in footer
+    document.getElementById('upgrade-link')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.pricingModal.show();
     });
   }
 
@@ -777,12 +811,22 @@ function generateOptions(strike, outputDir) {
       <button class="btn btn-danger mt-sm" id="reset-btn">Reset Vault</button>
     </div>
 
-    <div class="trust-banner mt-xl">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-      Your data never leaves your device
-    </div>
+    <!-- 864zeros Brand Footer -->
+    <footer class="brand-footer mt-xl">
+      <div class="footer-brand">
+        <span class="footer-logo">864</span>
+        <span class="footer-company">zeros</span>
+      </div>
+      <div class="footer-mission">Organize Your Internal Architecture</div>
+      <div class="footer-links">
+        <a href="https://864zeros.com/privacy" target="_blank" rel="noopener">Privacy</a>
+        <span class="footer-divider">·</span>
+        <a href="https://864zeros.com/terms" target="_blank" rel="noopener">Terms</a>
+        <span class="footer-divider">·</span>
+        <a href="https://864zeros.com/support" target="_blank" rel="noopener">Support</a>
+      </div>
+      <div class="footer-copyright">© 2026 864zeros LLC. All rights reserved.</div>
+    </footer>
   </div>
 
   <script type="module" src="./options.js"></script>
@@ -792,6 +836,7 @@ function generateOptions(strike, outputDir) {
 
   const js = `// options.js - ${strike.name} Settings
 // ${strike.id}
+// 864zeros LLC
 
 console.log('[${strike.name}] Options loaded');
 `;
@@ -983,15 +1028,18 @@ function copyUIBricks(strike, outputDir) {
   }
 }
 
-function copyStylesheet(strike, outputDir) {
-  // Copy aether-ui.css from build kit
-  const sourcePath = path.join(LIB_DIR, 'aether-ui.css');
-  const destPath = path.join(outputDir, 'lib/aether-ui.css');
+function copyCoreBricks(strike, outputDir) {
+  // Copy core bricks (864z-core.js, aether-ui.css) from build kit
+  for (const brick of CORE_BRICKS) {
+    const sourcePath = path.join(LIB_DIR, brick);
+    const destPath = path.join(outputDir, 'lib', brick);
 
-  if (fs.existsSync(sourcePath)) {
-    fs.copyFileSync(sourcePath, destPath);
-  } else {
-    console.warn('[Strike Bridge] aether-ui.css not found, skipping copy');
+    if (fs.existsSync(sourcePath)) {
+      fs.copyFileSync(sourcePath, destPath);
+      console.log(`  Copied: ${brick}`);
+    } else {
+      console.warn(`[Strike Bridge] ${brick} not found, skipping copy`);
+    }
   }
 }
 

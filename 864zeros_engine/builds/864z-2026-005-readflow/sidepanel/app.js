@@ -10,6 +10,7 @@ import { parseInstapaperCSV, ArticleLibrary, INSTAPAPER_PREMIUM_PRICE } from '..
 import { generateEpub, generateDigestFilename, downloadEpub, createDownloadUrl } from '../lib/epub-builder.js';
 import { generateQRCodeSVG } from '../lib/qr-generator.js';
 import { APP_NAME, TARGET_SAAS, TARGET_PRICE, STORAGE_KEYS } from '../lib/constants.js';
+import { PricingModalController, injectPricingCSS } from '../lib/BRK-PRICING-001.js';
 
 /**
  * ReadFlow Application Controller
@@ -19,6 +20,7 @@ class ReadFlowApp {
     this.library = new ArticleLibrary();
     this.currentView = 'reading-list';
     this.searchQuery = '';
+    this.pricingModal = null;
   }
 
   /**
@@ -36,6 +38,17 @@ class ReadFlowApp {
 
     // Attach event listeners
     this._attachListeners();
+
+    // Initialize pricing modal (864zeros branding)
+    injectPricingCSS();
+    this.pricingModal = new PricingModalController({
+      productName: 'ReadFlow',
+      currentTier: 'free',
+      onUpgrade: (tier) => {
+        console.log(`[${APP_NAME}] Upgrade requested:`, tier);
+        // TODO: Handle upgrade flow
+      }
+    });
 
     // Render initial state
     this._render();
@@ -74,6 +87,12 @@ class ReadFlowApp {
 
     // Lock/Menu button
     this.elements.lockBtn?.addEventListener('click', () => this._showOptionsMenu());
+
+    // Upgrade link (864zeros pricing modal)
+    document.getElementById('upgrade-link')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.pricingModal?.show();
+    });
   }
 
   /**

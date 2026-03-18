@@ -57,16 +57,53 @@
       </div>
     </main>
 
-    <!-- Trust Footer -->
-    <footer class="trust-footer">
-      <div class="trust-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        Your data never leaves your device
+    <!-- 864zeros Brand Footer -->
+    <footer class="brand-footer compact">
+      <div class="footer-brand">
+        <span class="footer-logo">864</span>
+        <span class="footer-company">zeros</span>
       </div>
+      <div class="footer-mission">Organize Your Internal Architecture</div>
+      <div class="footer-links">
+        <a href="https://864zeros.com/privacy" target="_blank" rel="noopener">Privacy</a>
+        <span class="footer-divider">·</span>
+        <a href="https://864zeros.com/terms" target="_blank" rel="noopener">Terms</a>
+        <span class="footer-divider">·</span>
+        <a href="#" id="upgrade-link">Upgrade</a>
+      </div>
+      <div class="footer-copyright">© 2026 864zeros LLC. All rights reserved.</div>
     </footer>
   </div>
+
+  <!-- Import Modal (BRK-UI-IMPORT-001) -->
+  <div class="import-modal hidden" id="import-modal">
+    <header class="modal-header">
+      <h3>Import from Instapaper</h3>
+      <button class="modal-close" id="import-modal-close" title="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </header>
+    <div class="import-section p-lg">
+      <div class="dropzone" id="import-dropzone">
+        <div class="dropzone-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <div class="dropzone-text">Drop your Instapaper CSV export here</div>
+        <div class="dropzone-hint">Or click to browse</div>
+      </div>
+      <input type="file" id="import-file-input" accept=".csv,.json" class="hidden">
+    </div>
+  </div>
+
+  <!-- Audit Result Modal (BRK-UI-IMPORT-001) -->
+  <div class="audit-modal hidden" id="audit-modal"></div>
 
   <script type="module" src="./app.js"></script>
 </body>

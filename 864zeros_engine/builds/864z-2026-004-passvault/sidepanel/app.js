@@ -9,6 +9,7 @@ import { parsePasswordExport, PasswordVault } from '../lib/password-parser.js';
 import { breachChecker } from '../lib/breach-checker.js';
 import { AuditReportController, AUDIT_REPORT_CSS } from './audit-report.js';
 import { VAULT_STATE, MESSAGE_TYPES, COPY } from '../lib/constants.js';
+import { PricingModalController, injectPricingCSS } from '../lib/BRK-PRICING-001.js';
 
 /**
  * PassVault Application Controller
@@ -20,6 +21,7 @@ class PassVaultApp {
     this.passwordVault = null;
     this.vaultId = null;
     this.state = VAULT_STATE.UNINITIALIZED;
+    this.pricingModal = null;
 
     // DOM references
     this.elements = {};
@@ -37,6 +39,16 @@ class PassVaultApp {
 
     // Add audit report CSS
     this._injectCSS(AUDIT_REPORT_CSS);
+
+    // Initialize pricing modal (BRK-PRICING-001)
+    injectPricingCSS();
+    this.pricingModal = new PricingModalController({
+      productName: 'PassVault',
+      currentTier: 'free',
+      onUpgrade: (tier) => {
+        console.log('[PassVault] Upgrade requested:', tier);
+      }
+    });
 
     // Cache DOM elements
     this._cacheElements();
@@ -160,6 +172,12 @@ class PassVaultApp {
     // Import modal close button
     document.getElementById('import-modal-close')?.addEventListener('click', () => {
       this._hideImportModal();
+    });
+
+    // Upgrade link in footer
+    document.getElementById('upgrade-link')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.pricingModal.show();
     });
 
     // Custom events
