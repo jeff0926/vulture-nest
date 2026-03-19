@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>864zeros Office — Dashboard</title>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a24;
+      --text-primary: #f0f0f5;
+      --text-secondary: #a0a0b0;
+      --text-muted: #606070;
+      --accent: #00d084;
+      --accent-subtle: rgba(0, 208, 132, 0.1);
+      --border: #2a2a38;
+      --warning: #ffa502;
+      --danger: #ff4757;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .dashboard {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+
+    .logo-864 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .logo-zeros {
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--text-secondary);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .timestamp {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    /* Building Map */
+    .building-map {
+      display: grid;
+      grid-template-columns: 1fr 200px 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .division {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .division-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .division-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .division-factory .division-icon {
+      background: rgba(52, 152, 219, 0.2);
+    }
+
+    .division-hallway .division-icon {
+      background: rgba(255, 165, 2, 0.2);
+    }
+
+    .division-studio .division-icon {
+      background: rgba(155, 89, 182, 0.2);
+    }
+
+    .division-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .division-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .hallway {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hallway-line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    .hallway-label {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      color: var(--warning);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    /* Project Cards */
+    .project-list {
+      margin-top: 16px;
+    }
+
+    .project-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent);
+    }
+
+    .project-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .project-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .project-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .status-testing {
+      background: rgba(52, 152, 219, 0.2);
+      color: #3498db;
+    }
+
+    .status-gtm-ready {
+      background: rgba(0, 208, 132, 0.2);
+      color: var(--accent);
+    }
+
+    .status-drafting {
+      background: rgba(155, 89, 182, 0.2);
+      color: #9b59b6;
+    }
+
+    .status-waiting {
+      background: rgba(255, 165, 2, 0.2);
+      color: var(--warning);
+    }
+
+    .project-id {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .project-path {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding: 6px 8px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+
+    /* Status Summary */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .status-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .status-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Gatekeeper */
+    .gatekeeper {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .gatekeeper-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .gatekeeper-icon {
+      font-size: 24px;
+    }
+
+    .gatekeeper-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .gatekeeper-log {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      margin-bottom: 8px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .log-time {
+      color: var(--text-muted);
+    }
+
+    .log-message {
+      color: var(--warning);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 2px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <div class="logo">
+          <span class="logo-864">864</span>
+          <span class="logo-zeros">zeros</span>
+        </div>
+        <div class="subtitle">Office Dashboard — Building Map</div>
+      </div>
+      <div class="timestamp">
+        Last updated: <span id="timestamp">2026-03-18 19:45</span>
+      </div>
+    </header>
+
+    <!-- Status Summary -->
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="status-value">2</div>
+        <div class="status-label">Active Strikes</div>
+      </div>
+      <div class="status-card">
+        <div class="status-value">1</div>
+        <div class="status-label">In Factory</div>
+      </div>
+      <div class="status-card">
+        <div class="status-value">0</div>
+        <div class="status-label">In Hallway</div>
+      </div>
+      <div class="status-card">
+        <div class="status-value">1</div>
+        <div class="status-label">In Studio</div>
+      </div>
+    </div>
+
+    <!-- Building Map -->
+    <div class="building-map">
+      <!-- DIV-3: Factory -->
+      <div class="division division-factory">
+        <div class="division-header">
+          <div class="division-icon">🏭</div>
+          <div>
+            <div class="division-title">DIV-3: Factory</div>
+            <div class="division-subtitle">Technical Operations</div>
+          </div>
+        </div>
+
+        <div class="project-list">
+          <div class="project-card">
+            <div class="project-header">
+              <span class="project-name">PassVault</span>
+              <span class="project-status status-testing">Testing</span>
+            </div>
+            <div class="project-id">864z-2026-004</div>
+            <div class="project-path">OFFICE/DIV-3-FACTORY/projects/864z-2026-004-passvault/</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hallway -->
+      <div class="division hallway division-hallway">
+        <div class="division-icon">🚪</div>
+        <div class="hallway-line"></div>
+        <div class="hallway-label">HALLWAY</div>
+        <div class="hallway-line"></div>
+        <div class="division-icon">✍️</div>
+
+        <div class="project-list" style="width: 100%; margin-top: 16px;">
+          <div class="empty-state">
+            No projects awaiting signature
+          </div>
+        </div>
+      </div>
+
+      <!-- DIV-4: Studio -->
+      <div class="division division-studio">
+        <div class="division-header">
+          <div class="division-icon">🎨</div>
+          <div>
+            <div class="division-title">DIV-4: Studio</div>
+            <div class="division-subtitle">Marketing Operations</div>
+          </div>
+        </div>
+
+        <div class="project-list">
+          <div class="project-card">
+            <div class="project-header">
+              <span class="project-name">ReadFlow GTM</span>
+              <span class="project-status status-drafting">Drafting</span>
+            </div>
+            <div class="project-id">864z-2026-005</div>
+            <div class="project-path">OFFICE/DIV-4-STUDIO/drafts/readflow/</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gatekeeper Log -->
+    <div class="gatekeeper">
+      <div class="gatekeeper-header">
+        <span class="gatekeeper-icon">🔐</span>
+        <span class="gatekeeper-title">Gatekeeper Log</span>
+      </div>
+      <div class="gatekeeper-log">
+        <div class="log-entry">
+          <span class="log-time">[2026-03-18 19:45:00]</span>
+          <span class="log-message">SYSTEM INITIALIZED — Awaiting HALLWAY activity</span>
+        </div>
+        <div class="log-entry">
+          <span class="log-time">[2026-03-18 19:45:00]</span>
+          <span>PassVault moved to DIV-3-FACTORY/projects/</span>
+        </div>
+        <div class="log-entry">
+          <span class="log-time">[2026-03-18 19:45:00]</span>
+          <span>ReadFlow GTM moved to DIV-4-STUDIO/drafts/</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Details -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+      <!-- PassVault Detail -->
+      <div class="division">
+        <div class="division-header">
+          <div class="division-icon">🔐</div>
+          <div>
+            <div class="division-title">PassVault</div>
+            <div class="division-subtitle">Password Rescue Utility</div>
+          </div>
+        </div>
+        <table style="width: 100%; font-size: 13px; color: var(--text-secondary);">
+          <tr><td style="padding: 4px 0;">Strike ID:</td><td>864z-2026-004</td></tr>
+          <tr><td style="padding: 4px 0;">Target SaaS:</td><td>Dashlane ($60/yr)</td></tr>
+          <tr><td style="padding: 4px 0;">Division:</td><td>DIV-3 (Factory)</td></tr>
+          <tr><td style="padding: 4px 0;">Status:</td><td style="color: #3498db;">Testing</td></tr>
+          <tr><td style="padding: 4px 0;">Phase:</td><td>Division 3 QA</td></tr>
+        </table>
+      </div>
+
+      <!-- ReadFlow Detail -->
+      <div class="division">
+        <div class="division-header">
+          <div class="division-icon">📚</div>
+          <div>
+            <div class="division-title">ReadFlow</div>
+            <div class="division-subtitle">Read-it-Later Rescue</div>
+          </div>
+        </div>
+        <table style="width: 100%; font-size: 13px; color: var(--text-secondary);">
+          <tr><td style="padding: 4px 0;">Strike ID:</td><td>864z-2026-005</td></tr>
+          <tr><td style="padding: 4px 0;">Target SaaS:</td><td>Instapaper ($30/yr)</td></tr>
+          <tr><td style="padding: 4px 0;">Division:</td><td>DIV-4 (Studio)</td></tr>
+          <tr><td style="padding: 4px 0;">Status:</td><td style="color: var(--accent);">GTM Ready</td></tr>
+          <tr><td style="padding: 4px 0;">Phase:</td><td>Division 4 Marketing</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-brand">
+        <span class="logo-864" style="font-size: 16px;">864</span>
+        <span class="logo-zeros" style="font-size: 16px;">zeros</span>
+      </div>
+      <div>Organize Your Internal Architecture (OIA)</div>
+      <div style="margin-top: 8px;">© 2026 864zeros LLC. All rights reserved.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Update timestamp
+    document.getElementById('timestamp').textContent = new Date().toLocaleString();
+  </script>
+</body>
+</html>
