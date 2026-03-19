@@ -29,7 +29,7 @@ class OptionsController {
     this.settings = stored.settings || {
       autoLockTimeout: 15,
       clipboardTimeout: 30,
-      breachCheck: true,
+      breachCheck: false, // OPT-IN: Disabled by default per Z-Audit
       theme: 'dark',
       showStrength: true
     };
@@ -60,10 +60,39 @@ class OptionsController {
       this.saveSettings();
     });
 
-    // Breach check toggle
-    document.getElementById('breach-check').addEventListener('change', (e) => {
-      this.settings.breachCheck = e.target.checked;
+    // Breach check toggle (requires permission request)
+    document.getElementById('breach-check').addEventListener('change', async (e) => {
+      const enabled = e.target.checked;
+
+      if (enabled) {
+        // Request optional permission for HIBP API
+        try {
+          const granted = await chrome.permissions.request({
+            origins: ['https://api.pwnedpasswords.com/*']
+          });
+
+          if (!granted) {
+            // Permission denied - revert checkbox
+            e.target.checked = false;
+            alert('Permission required for breach checking. The feature has been disabled.');
+            return;
+          }
+        } catch (error) {
+          console.error('[Options] Permission request failed:', error);
+          e.target.checked = false;
+          return;
+        }
+      }
+
+      this.settings.breachCheck = enabled;
       this.saveSettings();
+
+      // Notify user about the change
+      if (enabled) {
+        console.log('[Options] Breach checking enabled - k-anonymity mode');
+      } else {
+        console.log('[Options] Breach checking disabled');
+      }
     });
 
     // Theme

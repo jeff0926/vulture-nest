@@ -40,7 +40,7 @@
     "clipboardWrite"
   ],
 
-  "host_permissions": [
+  "optional_host_permissions": [
     "https://api.pwnedpasswords.com/*"
   ],
 

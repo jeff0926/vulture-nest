@@ -1,13 +1,16 @@
 // breach-checker.js - HIBP k-Anonymity Breach Checker [DELTA]
 // 864zeros Build: 864z-2026-004
 //
-// PRIVACY MODEL: k-Anonymity
+// PRIVACY MODEL: k-Anonymity (OPT-IN)
+// - DISABLED by default - user must explicitly enable
 // - Only sends first 5 characters of SHA-1 hash
 // - API returns ~500 matching suffixes
 // - We check locally if our full hash matches
 // - Full password NEVER leaves the device
+//
+// REBUILD FIX: Made opt-in per Z-Audit verdict
 
-import { HIBP } from './constants.js';
+import { HIBP, BREACH_CHECK } from './constants.js';
 
 /**
  * Breach Checker - Check passwords against HIBP database.
@@ -24,10 +27,46 @@ export class BreachChecker {
   constructor() {
     this.cache = new Map(); // Cache prefix results
     this.cacheExpiry = 24 * 60 * 60 * 1000; // 24 hours
+    this._consentGranted = null; // Cached consent status
+  }
+
+  /**
+   * Check if user has granted consent for breach checking.
+   * Returns cached value if available, otherwise checks storage.
+   *
+   * @returns {Promise<boolean>}
+   */
+  async hasConsent() {
+    // Return cached value if available
+    if (this._consentGranted !== null) {
+      return this._consentGranted;
+    }
+
+    try {
+      // Check chrome.storage for consent
+      const stored = await chrome.storage.local.get('settings');
+      const settings = stored.settings || {};
+
+      // Default to false (opt-in model)
+      this._consentGranted = settings.breachCheck === true;
+      return this._consentGranted;
+    } catch (error) {
+      // If storage unavailable, default to disabled
+      console.warn('[BreachChecker] Could not check consent:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Clear cached consent (call when settings change).
+   */
+  clearConsentCache() {
+    this._consentGranted = null;
   }
 
   /**
    * Check if a password has been breached.
+   * REQUIRES USER CONSENT - will return disabled result if not granted.
    *
    * @param {string} password - Password to check
    * @returns {Promise<BreachResult>}
@@ -35,6 +74,12 @@ export class BreachChecker {
   async check(password) {
     if (!password) {
       return new BreachResult(false, 0, 'Empty password');
+    }
+
+    // CONSENT CHECK: Verify user has opted in before any network call
+    const hasConsent = await this.hasConsent();
+    if (!hasConsent) {
+      return new BreachResult(false, 0, 'Breach checking disabled', false, true);
     }
 
     try {
@@ -97,11 +142,19 @@ export class BreachChecker {
 
   /**
    * Get breach summary for a vault.
+   * Returns early if breach checking is disabled.
    *
    * @param {PasswordEntry[]} entries - Password entries to check
    * @returns {Promise<BreachSummary>}
    */
   async auditVault(entries) {
+    // Check consent before processing
+    const hasConsent = await this.hasConsent();
+    if (!hasConsent) {
+      console.log('[BreachChecker] Breach checking disabled - skipping audit');
+      return new BreachSummary([], 0, true); // disabled = true
+    }
+
     console.log(`[BreachChecker] Auditing ${entries.length} entries...`);
 
     const passwords = entries.map(e => e.password).filter(Boolean);
@@ -232,11 +285,12 @@ export class BreachChecker {
  * Result of a breach check.
  */
 export class BreachResult {
-  constructor(breached, count, message, error = false) {
+  constructor(breached, count, message, error = false, disabled = false) {
     this.breached = breached;
     this.count = count;
     this.message = message;
     this.error = error;
+    this.disabled = disabled; // True if breach checking is disabled (no consent)
     this.checkedAt = new Date().toISOString();
   }
 }
@@ -245,10 +299,11 @@ export class BreachResult {
  * Summary of breach audit for a vault.
  */
 export class BreachSummary {
-  constructor(breachedEntries, totalBreachCount) {
+  constructor(breachedEntries, totalBreachCount, disabled = false) {
     this.breachedEntries = breachedEntries;
     this.totalBreachCount = totalBreachCount;
     this.breachedCount = breachedEntries.length;
+    this.disabled = disabled; // True if breach checking was skipped (no consent)
     this.auditedAt = new Date().toISOString();
   }
 
@@ -274,6 +329,10 @@ export class BreachSummary {
    * Get human-readable summary.
    */
   getSummaryText() {
+    if (this.disabled) {
+      return 'Breach checking is disabled. Enable it in Settings to scan for compromised passwords.';
+    }
+
     if (this.breachedCount === 0) {
       return 'No compromised passwords found.';
     }

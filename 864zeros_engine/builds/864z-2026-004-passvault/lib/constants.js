@@ -168,8 +168,16 @@ export const COPY = {
   noRecovery: 'We cannot recover your master password. This is by design.',
   freeForever: 'Free forever. No limits. No subscription.',
   zeroKnowledge: 'Zero-knowledge architecture: We never see your data.',
-  localOnly: '100% local. Your vault is stored only on this device.',
-  valueProp: 'Dashlane charges $60/year. PassVault is free forever.'
+  localOnly: '100% local encryption. Optional breach checking available.',
+  valueProp: 'Dashlane charges $60/year. PassVault is free forever.',
+  breachDisclosure: 'Breach checking sends only the first 5 characters of a password hash (k-anonymity). Your actual password never leaves your device.'
+};
+
+// Breach Check Consent
+export const BREACH_CHECK = {
+  defaultEnabled: false, // OPT-IN by default
+  consentKey: 'breach_check_consent',
+  consentVersion: 1
 };
 
 // Database Schema
