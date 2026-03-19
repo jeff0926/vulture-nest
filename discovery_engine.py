@@ -652,28 +652,254 @@ class DiscoveryEngine:
 
 
 # =============================================================================
-# TEST HARNESS
+# LIVE SCAN FUNCTIONALITY
 # =============================================================================
-if __name__ == "__main__":
+import argparse
+from pathlib import Path
+
+# Output paths
+OFFICE_ROOT = Path(__file__).parent / "OFFICE"
+DIV1_VULTURE = OFFICE_ROOT / "DIV-1-VULTURE"
+
+
+def run_live_scan(product_name: str, output_dir: Path = None) -> Dict[str, Any]:
+    """
+    Execute a live market scan for a specific product/SaaS.
+
+    Searches web for:
+    - Pricing friction signals
+    - Export/lock-in complaints
+    - Enterprise pain points
+    - Competitor landscape
+
+    Returns structured strike report data.
+    """
+    from datetime import datetime
+
+    print("\n" + "=" * 70)
+    print(f"VULTURE STRIKE SCAN: {product_name.upper()}")
+    print("=" * 70)
+
+    if output_dir is None:
+        output_dir = DIV1_VULTURE
+
+    # Ensure output directory exists
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    strike_report = {
+        "meta": {
+            "product": product_name,
+            "scan_timestamp": datetime.now().isoformat(),
+            "engine_version": "1.1.0",
+            "mode": "live"
+        },
+        "pricing_friction": [],
+        "export_hostage": [],
+        "enterprise_pain": [],
+        "sentiment_signals": [],
+        "competitors": [],
+        "unbundle_opportunity": {
+            "viable": False,
+            "local_first_possible": False,
+            "estimated_market_size": 0,
+            "saas_hostage_indicators": []
+        },
+        "verdict": {
+            "strike_worthy": False,
+            "priority": "low",
+            "rationale": ""
+        }
+    }
+
+    # Initialize scraper (will use WebSearch tool via tool_wrapper if available)
+    try:
+        from tool_wrapper import ToolClient
+        tool_client = ToolClient()
+        print("[LiveScan] ToolClient initialized - web search enabled")
+    except ImportError:
+        tool_client = None
+        print("[LiveScan] WARNING: ToolClient not available - limited scan mode")
+
+    scraper = CommunityScraper(tool_client)
+    arbitrage = MarketCapArbitrage(tool_client)
+
+    # === PHASE 1: Pricing Friction ===
+    print(f"\n[Phase 1] Scanning pricing friction for '{product_name}'...")
+
+    pricing_queries = [
+        f'"{product_name}" pricing expensive OR "too expensive" OR overpriced',
+        f'"{product_name}" enterprise pricing OR "per seat" OR "per user"',
+        f'"{product_name}" free tier OR limitations OR restricted',
+    ]
+
+    if tool_client:
+        for query in pricing_queries:
+            try:
+                result = tool_client.google_web_search(query, max_results=5)
+                output = result.get("output", "")
+                for line in output.split('\n'):
+                    line = line.strip()
+                    if line and any(kw in line.lower() for kw in ["expensive", "pricing", "cost", "pay", "$"]):
+                        strike_report["pricing_friction"].append({
+                            "source": "web",
+                            "content": line[:400],
+                            "query": query
+                        })
+            except Exception as e:
+                print(f"    [Error] Pricing scan: {e}")
+
+    print(f"    Found {len(strike_report['pricing_friction'])} pricing friction signals")
+
+    # === PHASE 2: Export/Lock-in (SaaS Hostage) ===
+    print(f"\n[Phase 2] Scanning export/lock-in for '{product_name}'...")
+
+    export_queries = [
+        f'"{product_name}" export data OR "how to export" OR migration',
+        f'"{product_name}" lock-in OR locked OR "can\'t export"',
+        f'"{product_name}" alternative OR "switched from" OR replacement',
+    ]
+
+    if tool_client:
+        for query in export_queries:
+            try:
+                result = tool_client.google_web_search(query, max_results=5)
+                output = result.get("output", "")
+                for line in output.split('\n'):
+                    line = line.strip()
+                    if line and any(kw in line.lower() for kw in ["export", "lock", "migrate", "switch", "alternative"]):
+                        strike_report["export_hostage"].append({
+                            "source": "web",
+                            "content": line[:400],
+                            "query": query
+                        })
+            except Exception as e:
+                print(f"    [Error] Export scan: {e}")
+
+    print(f"    Found {len(strike_report['export_hostage'])} export/lock-in signals")
+
+    # === PHASE 3: Enterprise Pain ===
+    print(f"\n[Phase 3] Scanning enterprise pain points for '{product_name}'...")
+
+    enterprise_queries = [
+        f'"{product_name}" enterprise OR B2B problems OR issues',
+        f'"{product_name}" template OR "can\'t customize" OR limitations',
+        f'site:reddit.com "{product_name}" frustrating OR broken OR slow',
+        f'site:g2.com "{product_name}" cons OR negative',
+    ]
+
+    if tool_client:
+        for query in enterprise_queries:
+            try:
+                result = tool_client.google_web_search(query, max_results=5)
+                output = result.get("output", "")
+                for line in output.split('\n'):
+                    line = line.strip()
+                    if line and any(kw in line.lower() for kw in PAIN_KEYWORDS):
+                        strike_report["enterprise_pain"].append({
+                            "source": "web",
+                            "content": line[:400],
+                            "query": query
+                        })
+            except Exception as e:
+                print(f"    [Error] Enterprise scan: {e}")
+
+    print(f"    Found {len(strike_report['enterprise_pain'])} enterprise pain signals")
+
+    # === PHASE 4: Competitor Landscape ===
+    print(f"\n[Phase 4] Mapping competitor landscape for '{product_name}'...")
+
+    competitors = arbitrage.find_competitors(product_name)
+    strike_report["competitors"] = competitors
+    print(f"    Found {len(competitors)} competitors")
+
+    # === PHASE 5: Unbundle Analysis ===
+    print(f"\n[Phase 5] Analyzing unbundle opportunity...")
+
+    total_signals = (
+        len(strike_report["pricing_friction"]) +
+        len(strike_report["export_hostage"]) +
+        len(strike_report["enterprise_pain"])
+    )
+
+    # Determine if this is a valid strike target
+    hostage_indicators = []
+    if len(strike_report["export_hostage"]) >= 2:
+        hostage_indicators.append("Export friction detected")
+    if len(strike_report["pricing_friction"]) >= 2:
+        hostage_indicators.append("Pricing complaints prevalent")
+    if len(strike_report["enterprise_pain"]) >= 3:
+        hostage_indicators.append("Enterprise frustration documented")
+
+    strike_report["unbundle_opportunity"] = {
+        "viable": total_signals >= 5,
+        "local_first_possible": len(strike_report["export_hostage"]) >= 2,
+        "estimated_market_size": len(competitors) * 100000,  # Rough estimate
+        "saas_hostage_indicators": hostage_indicators
+    }
+
+    # === VERDICT ===
+    print(f"\n[Phase 6] Rendering verdict...")
+
+    if total_signals >= 8:
+        priority = "high"
+        strike_worthy = True
+        rationale = f"Strong market gap: {total_signals} pain signals, {len(hostage_indicators)} hostage indicators"
+    elif total_signals >= 5:
+        priority = "medium"
+        strike_worthy = True
+        rationale = f"Moderate opportunity: {total_signals} pain signals detected"
+    elif total_signals >= 2:
+        priority = "low"
+        strike_worthy = False
+        rationale = f"Weak signals: only {total_signals} pain points found"
+    else:
+        priority = "skip"
+        strike_worthy = False
+        rationale = f"Insufficient data: {total_signals} signals"
+
+    strike_report["verdict"] = {
+        "strike_worthy": strike_worthy,
+        "priority": priority,
+        "rationale": rationale,
+        "total_signals": total_signals
+    }
+
+    # === SAVE REPORT ===
+    output_file = output_dir / f"STRIKE_REPORT_{product_name.upper().replace(' ', '_')}.json"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(strike_report, f, indent=2, ensure_ascii=False)
+
+    print("\n" + "=" * 70)
+    print("STRIKE SCAN COMPLETE")
+    print("=" * 70)
+    print(f"\n  Product:     {product_name}")
+    print(f"  Priority:    {priority.upper()}")
+    print(f"  Strike:      {'YES' if strike_worthy else 'NO'}")
+    print(f"  Signals:     {total_signals}")
+    print(f"  Competitors: {len(competitors)}")
+    print(f"  Report:      {output_file}")
+    print("\n" + "=" * 70)
+
+    return strike_report
+
+
+def run_test_harness():
+    """Original test harness for dry-run testing."""
     print("=" * 60)
     print("DISCOVERY ENGINE TEST HARNESS")
     print("=" * 60)
 
-    # Test without actual API calls (dry run)
     engine = DiscoveryEngine(tool_client=None)
 
-    # Test exclusion list
     print("\n--- Testing Exclusion List ---")
     exclusions = ExclusionList()
     print(f"Current exclusions: {exclusions.exclusions}")
 
-    # Test carcass discovery
     print("\n--- Testing Carcass Discovery ---")
     carcasses = engine.discover_carcasses(categories=["chrome extension"])
     for c in carcasses[:3]:
         print(f"  - {c.name} ({c.category}): {c.traffic_monthly:,} monthly traffic")
 
-    # Create a mock profile for testing
     print("\n--- Testing Profile to LeadCandidate ---")
     mock_profile = CarcassProfile(
         name="TestApp",
@@ -698,3 +924,75 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("TEST HARNESS COMPLETE")
     print("=" * 60)
+
+
+# =============================================================================
+# CLI ENTRY POINT
+# =============================================================================
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Vulture-Nest Discovery Engine - Market Gap Scanner",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python discovery_engine.py --product "Knak" --mode live
+  python discovery_engine.py --product "Calendly" --mode live
+  python discovery_engine.py --mode test
+  python discovery_engine.py --list-carcasses
+        """
+    )
+
+    parser.add_argument(
+        "--product", "-p",
+        type=str,
+        help="Product/SaaS name to scan (e.g., 'Knak', 'Calendly')"
+    )
+
+    parser.add_argument(
+        "--mode", "-m",
+        type=str,
+        choices=["live", "test"],
+        default="test",
+        help="Scan mode: 'live' for real web search, 'test' for dry run"
+    )
+
+    parser.add_argument(
+        "--output", "-o",
+        type=str,
+        help="Output directory for strike reports (default: OFFICE/DIV-1-VULTURE)"
+    )
+
+    parser.add_argument(
+        "--list-carcasses",
+        action="store_true",
+        help="List all known carcasses in the database"
+    )
+
+    args = parser.parse_args()
+
+    # Handle --list-carcasses
+    if args.list_carcasses:
+        print("\n" + "=" * 60)
+        print("KNOWN CARCASSES DATABASE")
+        print("=" * 60)
+        for idx, carcass in enumerate(KNOWN_CARCASSES, 1):
+            unbundle = carcass.get("unbundle_potential", "standard")
+            print(f"  {idx:2}. {carcass['name']:<20} | {carcass['category']:<18} | unbundle: {unbundle}")
+        print("=" * 60)
+        sys.exit(0)
+
+    # Handle --mode test
+    if args.mode == "test":
+        run_test_harness()
+        sys.exit(0)
+
+    # Handle --mode live (requires --product)
+    if args.mode == "live":
+        if not args.product:
+            print("ERROR: --product is required for live mode")
+            print("Usage: python discovery_engine.py --product 'Knak' --mode live")
+            sys.exit(1)
+
+        output_dir = Path(args.output) if args.output else DIV1_VULTURE
+        report = run_live_scan(args.product, output_dir)
+        exit(0 if report["verdict"]["strike_worthy"] else 1)
