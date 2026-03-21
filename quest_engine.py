@@ -29,6 +29,7 @@ from datetime import datetime
 from pathlib import Path
 from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Any, Optional
+from enum import Enum
 
 # =============================================================================
 # CONSTANTS - The Vulture Capital Math
@@ -53,6 +54,13 @@ WEIGHTS = {
     "z_velocity": 0.35,     # Speed/recency of pain signals
     "z_scarcity": 0.20      # Lack of modern solutions
 }
+
+
+class StrikeStatus(Enum):
+    """Three-state verdict system for Strike Quests."""
+    STRIKE = "STRIKE"   # Score >= 8.64 AND tshirt != "L" - Proceed to build
+    HANGAR = "HANGAR"   # Score 7.0-8.63 OR L-size with high score - Shelved for later
+    REJECT = "REJECT"   # Score < 7.0 - Not viable
 
 # Output paths
 QUEST_OUTPUT_DIR = Path(__file__).parent / "OFFICE" / "DIV-1-VULTURE" / "quests"
@@ -123,10 +131,14 @@ class MathOfTheKill:
 
     # Verdict
     strike_qualified: bool
+    strike_status: StrikeStatus  # Three-state: STRIKE, HANGAR, REJECT
     kill_rationale: str
 
     def to_dict(self) -> Dict:
-        return asdict(self)
+        d = asdict(self)
+        # Convert Enum to string for JSON serialization
+        d['strike_status'] = self.strike_status.value
+        return d
 
 
 @dataclass
@@ -223,7 +235,7 @@ class StrikeQuest:
 **Quest ID:** `{self.quest_id}`
 **Generated:** {self.generated_at}
 **Mode:** {self.mode.upper()}
-**Vulture Score:** {self.math.vulture_score:.2f} {'(STRIKE QUALIFIED)' if self.math.strike_qualified else '(BELOW THRESHOLD)'}
+**Vulture Score:** {self.math.vulture_score:.2f} | **Verdict:** {self.math.strike_status.value}
 
 ---
 
@@ -307,7 +319,7 @@ class StrikeQuest:
 |--------|-------|
 | Growth Projection | {self.math.growth_projection}% |
 | Margin Projection | {self.math.margin_projection}% |
-| **Rule of 40** | **{self.math.rule_of_40}%** {'(PASS)' if self.math.rule_of_40 >= 40 else '(FAIL)'} |
+| **Rule of 40** | **{self.math.rule_of_40}%** {'(PASS)' if self.math.rule_of_40 >= RULE_OF_40_THRESHOLD else '(FAIL)'} |
 
 ### Market Sizing (TAM/SAM/SOM)
 
@@ -337,7 +349,7 @@ class StrikeQuest:
 
 ### Kill Decision
 
-**VERDICT:** {'STRIKE QUALIFIED' if self.math.strike_qualified else 'BELOW THRESHOLD'}
+**VERDICT:** {self.math.strike_status.value}
 
 > {self.math.kill_rationale}
 
@@ -559,7 +571,7 @@ class QuestEngine:
         rule_of_40: float
     ) -> tuple:
         """Calculate the final 864z score."""
-        exit_mult = 1.5 if rule_of_40 >= 40 else 1.0
+        exit_mult = 1.5 if rule_of_40 >= RULE_OF_40_THRESHOLD else 1.0
 
         base_score = (
             (z_conv * WEIGHTS['z_convergence']) +
@@ -692,7 +704,7 @@ class QuestEngine:
             sentiment_synthesis=sentiment,
             competitors=competitors,
             gtm_channels=self._suggest_gtm_channels(target_name, pain_signals),
-            positioning=self._generate_positioning(target_name, math.strike_qualified)
+            positioning=self._generate_positioning(target_name, math.strike_status)
         )
 
         # Save outputs
@@ -705,7 +717,7 @@ class QuestEngine:
         print(f"  Target:       {target_name}")
         print(f"  Vulture Score: {math.vulture_score:.2f}")
         print(f"  T-Shirt Size: {math.tshirt_size}")
-        print(f"  Strike:       {'YES' if math.strike_qualified else 'NO'}")
+        print(f"  Verdict:      {math.strike_status.value}")
         print(f"  Output:       {self.output_dir / f'{quest_id}.md'}")
 
         return quest
@@ -881,9 +893,9 @@ class QuestEngine:
         else:
             sentiment += "limited public complaints, suggesting either niche usage or adequate satisfaction."
 
-        if ransom.ransom_severity >= 7:
+        if ransom.ransom_severity >= LAMENT_THRESHOLD:
             sentiment += f" Pricing concerns are prominent (severity {ransom.ransom_severity}/10)."
-        if friction.friction_severity >= 7:
+        if friction.friction_severity >= LAMENT_THRESHOLD:
             sentiment += f" Export/lock-in friction is significant (severity {friction.friction_severity}/10)."
 
         return pain_signals, sentiment
@@ -956,27 +968,41 @@ class QuestEngine:
         tshirt = self.calculate_tshirt_size(complexity)
         build_hours = TSHIRT_SIZES.get(tshirt, {}).get("hours", 336)
 
-        # Strike decision
-        strike_qualified = (
-            vulture_score >= SCORE_THRESHOLD and
-            tshirt != "L" and
-            len(competitors) <= SCARCITY_THRESHOLD
-        )
+        # Strike decision - Three-state system (STRIKE / HANGAR / REJECT)
+        # STRIKE: score >= 8.64 AND tshirt != "L" AND competitors <= 3
+        # HANGAR: (7.0 <= score < 8.64) OR (score >= 8.64 AND tshirt == "L")
+        # REJECT: score < 7.0
 
         rationale = []
+
         if vulture_score >= SCORE_THRESHOLD:
-            rationale.append(f"864z score {vulture_score:.2f} exceeds {SCORE_THRESHOLD} threshold")
+            if tshirt != "L" and len(competitors) <= SCARCITY_THRESHOLD:
+                strike_status = StrikeStatus.STRIKE
+                strike_qualified = True
+                rationale.append(f"STRIKE: 864z score {vulture_score:.2f} exceeds {SCORE_THRESHOLD} threshold")
+            else:
+                # High score but L-size or too many competitors -> HANGAR
+                strike_status = StrikeStatus.HANGAR
+                strike_qualified = False
+                rationale.append(f"HANGAR: 864z score {vulture_score:.2f} qualifies but blocked by constraints")
+                if tshirt == "L":
+                    rationale.append("L-size veto: High-scoring project shelved due to complexity")
+                if len(competitors) > SCARCITY_THRESHOLD:
+                    rationale.append(f"Scarcity veto: {len(competitors)} competitors exceeds limit of {SCARCITY_THRESHOLD}")
+        elif vulture_score >= LAMENT_THRESHOLD:
+            # Near-threshold: 7.0 <= score < 8.64 -> HANGAR
+            strike_status = StrikeStatus.HANGAR
+            strike_qualified = False
+            rationale.append(f"HANGAR: 864z score {vulture_score:.2f} near-threshold ({LAMENT_THRESHOLD}-{SCORE_THRESHOLD})")
+            rationale.append("Re-validate when new pain signals emerge")
         else:
-            rationale.append(f"864z score {vulture_score:.2f} BELOW {SCORE_THRESHOLD} threshold")
+            # Below 7.0 -> REJECT
+            strike_status = StrikeStatus.REJECT
+            strike_qualified = False
+            rationale.append(f"REJECT: 864z score {vulture_score:.2f} below minimum threshold {LAMENT_THRESHOLD}")
 
-        if rule_of_40 >= 40:
+        if rule_of_40 >= RULE_OF_40_THRESHOLD:
             rationale.append(f"Rule of 40 ({rule_of_40}%) qualifies for 1.5x exit multiplier")
-
-        if tshirt == "L":
-            rationale.append("WARNING: L-size build exceeds complexity limits")
-
-        if len(competitors) > SCARCITY_THRESHOLD:
-            rationale.append(f"WARNING: {len(competitors)} competitors exceeds scarcity limit")
 
         return MathOfTheKill(
             z_convergence=z_conv,
@@ -998,6 +1024,7 @@ class QuestEngine:
             complexity_score=complexity,
             build_hours_estimate=build_hours,
             strike_qualified=strike_qualified,
+            strike_status=strike_status,
             kill_rationale=" | ".join(rationale)
         )
 
@@ -1091,10 +1118,13 @@ class QuestEngine:
             "Product Hunt"
         ]
 
-    def _generate_positioning(self, target: str, strike_qualified: bool) -> str:
-        if strike_qualified:
+    def _generate_positioning(self, target: str, strike_status: StrikeStatus) -> str:
+        if strike_status == StrikeStatus.STRIKE:
             return f"The local-first {target} alternative that puts your data first. No subscriptions, no cloud lock-in, no ransom."
-        return f"A potential alternative to {target} pending further validation."
+        elif strike_status == StrikeStatus.HANGAR:
+            return f"A near-qualified alternative to {target}. Shelved pending new pain signals or resource availability."
+        else:  # REJECT
+            return f"Insufficient signals to justify building a {target} alternative at this time."
 
     def _save_quest(self, quest: StrikeQuest):
         """Save quest to JSON and Markdown files."""
@@ -1165,7 +1195,7 @@ Examples:
                     data = json.load(f)
                     print(f"\n  {data['quest_id']}: {data['target_name']}")
                     print(f"    Score: {data['math']['vulture_score']}")
-                    print(f"    Strike: {'YES' if data['math']['strike_qualified'] else 'NO'}")
+                    print(f"    Verdict: {data['math']['strike_status']}")
         print()
         return
 
@@ -1175,7 +1205,13 @@ Examples:
         sys.exit(1)
 
     quest = engine.generate_quest(args.target, args.mode)
-    sys.exit(0 if quest.math.strike_qualified else 1)
+    # Exit codes: 0 = STRIKE, 1 = HANGAR, 2 = REJECT
+    if quest.math.strike_status == StrikeStatus.STRIKE:
+        sys.exit(0)
+    elif quest.math.strike_status == StrikeStatus.HANGAR:
+        sys.exit(1)
+    else:
+        sys.exit(2)
 
 
 if __name__ == "__main__":
