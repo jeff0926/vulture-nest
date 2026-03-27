@@ -1,27 +1,30 @@
 /**
  * BRK-PRICING-001 - Standard Pricing Modal Brick
- * 864zeros Factory Standard Component
+ * 864zeros LLC Factory Standard Component
  *
- * Displays the "Upgrade to Pro" or "Lifetime License" modal with
- * standardized 864zeros LLC pricing tiers.
+ * A standardized pricing/upgrade modal for all 864zeros products.
+ * Displays Free, Pro ($12/mo), and Lifetime ($150) tiers.
  *
  * USAGE:
  * ```javascript
  * import { PricingModalController } from '../lib/BRK-PRICING-001.js';
  *
  * const pricing = new PricingModalController({
+ *   modalId: 'pricing-modal',
  *   productName: 'PassVault',
- *   currentTier: 'free'
+ *   competitorName: 'Dashlane',
+ *   competitorPrice: 60,
+ *   onSelectTier: (tier) => { console.log('Selected:', tier); }
  * });
  *
- * pricing.show();
+ * pricing.init();
+ * pricing.open();
  * ```
  */
 
 import {
   COMPANY_NAME,
   COPYRIGHT,
-  MISSION,
   PRICING_TIERS,
   LEGAL_URLS
 } from './864z-core.js';
@@ -30,112 +33,181 @@ import {
  * Pricing Modal Controller
  */
 export class PricingModalController {
-  constructor(config = {}) {
+  /**
+   * @param {Object} config
+   * @param {string} config.modalId - Modal element ID
+   * @param {string} config.productName - Current product name
+   * @param {string} config.competitorName - Competitor being compared
+   * @param {number} config.competitorPrice - Competitor annual price
+   * @param {Function} config.onSelectTier - Callback when tier selected
+   * @param {string} config.triggerBtnId - Optional trigger button ID
+   */
+  constructor(config) {
     this.config = {
-      productName: 'App',
-      currentTier: 'free',
       modalId: 'pricing-modal',
-      onUpgrade: null,
+      productName: 'Product',
+      competitorName: 'Competitor',
+      competitorPrice: 60,
+      triggerBtnId: 'upgrade-btn',
       ...config
     };
 
     this.modal = null;
+    this.isOpen = false;
   }
 
   /**
-   * Show the pricing modal
+   * Initialize the pricing modal.
    */
-  show() {
-    this._createModal();
-    this.modal.classList.remove('hidden');
-    this.modal.classList.add('visible');
-    document.body.style.overflow = 'hidden';
-  }
+  init() {
+    this.modal = document.getElementById(this.config.modalId);
 
-  /**
-   * Hide the pricing modal
-   */
-  hide() {
-    if (this.modal) {
-      this.modal.classList.add('hidden');
-      this.modal.classList.remove('visible');
-      document.body.style.overflow = '';
+    if (!this.modal) {
+      console.error('[BRK-PRICING-001] Modal element not found:', this.config.modalId);
+      return false;
     }
-  }
 
-  /**
-   * Create and inject the modal HTML
-   * @private
-   */
-  _createModal() {
-    // Remove existing modal if present
-    const existing = document.getElementById(this.config.modalId);
-    if (existing) existing.remove();
-
-    const modal = document.createElement('div');
-    modal.id = this.config.modalId;
-    modal.className = 'pricing-modal hidden';
-    modal.innerHTML = this._generateHTML();
-
-    document.body.appendChild(modal);
-    this.modal = modal;
+    // Render content
+    this.modal.innerHTML = this._generateHTML();
 
     // Attach event listeners
     this._attachListeners();
+
+    // Trigger button
+    const triggerBtn = document.getElementById(this.config.triggerBtnId);
+    if (triggerBtn) {
+      triggerBtn.addEventListener('click', () => this.open());
+    }
+
+    console.log('[BRK-PRICING-001] Pricing modal initialized');
+    return true;
   }
 
   /**
-   * Generate modal HTML
+   * Open the pricing modal.
+   */
+  open() {
+    if (!this.modal) return;
+    this.modal.classList.remove('hidden');
+    this.modal.classList.add('visible');
+    this.isOpen = true;
+  }
+
+  /**
+   * Close the pricing modal.
+   */
+  close() {
+    if (!this.modal) return;
+    this.modal.classList.add('hidden');
+    this.modal.classList.remove('visible');
+    this.isOpen = false;
+  }
+
+  /**
+   * Generate the pricing modal HTML.
    * @private
    */
   _generateHTML() {
     const { FREE, PRO, LIFETIME } = PRICING_TIERS;
+    const savings = this.config.competitorPrice - (PRO.price * 12);
 
     return `
-      <div class="pricing-overlay" data-close="true">
+      <div class="pricing-modal-content">
+        <header class="modal-header">
+          <h3>Choose Your Plan</h3>
+          <button class="modal-close" id="pricing-modal-close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </header>
+
         <div class="pricing-container">
-          <!-- Header -->
-          <header class="pricing-header">
-            <div class="pricing-brand">
-              <span class="brand-logo">864</span>
-              <span class="brand-name">zeros</span>
+          <div class="pricing-header">
+            <h2>Upgrade ${this.config.productName}</h2>
+            <p class="pricing-tagline">Local-first. Zero-knowledge. Forever yours.</p>
+          </div>
+
+          <div class="pricing-grid">
+            <!-- Free Tier -->
+            <div class="pricing-card" data-tier="free">
+              <div class="tier-name">${FREE.name}</div>
+              <div class="tier-description">${FREE.description}</div>
+              <div class="tier-price">
+                <span class="currency">$</span>
+                <span class="amount">0</span>
+                <span class="period">forever</span>
+              </div>
+              <ul class="tier-features">
+                ${FREE.features.map(f => `<li>${f}</li>`).join('')}
+              </ul>
+              <button class="btn btn-secondary tier-cta" data-tier="free">
+                ${FREE.cta}
+              </button>
             </div>
-            <button class="modal-close" id="pricing-close" title="Close">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          </header>
 
-          <!-- Mission -->
-          <div class="pricing-mission">
-            <p>${MISSION}</p>
+            <!-- Pro Tier -->
+            <div class="pricing-card popular" data-tier="pro">
+              <div class="tier-name">${PRO.name}</div>
+              <div class="tier-description">${PRO.description}</div>
+              <div class="tier-price">
+                <span class="currency">$</span>
+                <span class="amount">${PRO.price}</span>
+                <span class="period">/ month</span>
+              </div>
+              <ul class="tier-features">
+                ${PRO.features.map(f => `<li>${f}</li>`).join('')}
+              </ul>
+              <button class="btn btn-primary tier-cta" data-tier="pro">
+                ${PRO.cta}
+              </button>
+            </div>
+
+            <!-- Lifetime Tier -->
+            <div class="pricing-card lifetime" data-tier="lifetime">
+              <span class="tier-badge">${LIFETIME.badge}</span>
+              <div class="tier-name">${LIFETIME.name}</div>
+              <div class="tier-description">${LIFETIME.description}</div>
+              <div class="tier-price">
+                <span class="currency">$</span>
+                <span class="amount">${LIFETIME.price}</span>
+                <span class="period">once</span>
+              </div>
+              <ul class="tier-features">
+                ${LIFETIME.features.map(f => `<li>${f}</li>`).join('')}
+              </ul>
+              <button class="btn btn-primary tier-cta" data-tier="lifetime">
+                ${LIFETIME.cta}
+              </button>
+            </div>
           </div>
 
-          <!-- Tier Cards -->
-          <div class="pricing-tiers">
-            ${this._renderTierCard(FREE, 'free')}
-            ${this._renderTierCard(PRO, 'pro')}
-            ${this._renderTierCard(LIFETIME, 'lifetime')}
+          <!-- Comparison -->
+          <div class="pricing-comparison">
+            <p class="comparison-text">
+              ${this.config.competitorName}:
+              <span class="competitor-price">$${this.config.competitorPrice}/year</span>
+              &nbsp;→&nbsp;
+              ${this.config.productName} Pro:
+              <span class="savings">$${PRO.price * 12}/year (save $${savings})</span>
+            </p>
           </div>
 
-          <!-- Trust Message -->
-          <div class="pricing-trust">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Guarantee -->
+          <div class="money-back-guarantee">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
-            <span>Local-first. Zero-knowledge. Forever yours.</span>
+            30-day money-back guarantee. No questions asked.
           </div>
 
           <!-- Footer -->
-          <footer class="pricing-footer">
+          <footer class="brand-footer compact mt-xl">
             <div class="footer-links">
               <a href="${LEGAL_URLS.PRIVACY}" target="_blank" rel="noopener">Privacy</a>
-              <span>·</span>
+              <span class="footer-divider">·</span>
               <a href="${LEGAL_URLS.TERMS}" target="_blank" rel="noopener">Terms</a>
-              <span>·</span>
-              <a href="${LEGAL_URLS.SUPPORT}" target="_blank" rel="noopener">Support</a>
             </div>
             <div class="footer-copyright">${COPYRIGHT}</div>
           </footer>
@@ -145,346 +217,84 @@ export class PricingModalController {
   }
 
   /**
-   * Render a single tier card
-   * @private
-   */
-  _renderTierCard(tier, tierId) {
-    const isCurrent = this.config.currentTier === tierId;
-    const isPopular = tier.popular;
-    const isBestValue = tier.badge === 'Best Value';
-
-    let priceDisplay;
-    if (tier.price === 0) {
-      priceDisplay = '<span class="price-amount">Free</span>';
-    } else if (tier.period === 'once') {
-      priceDisplay = `<span class="price-amount">$${tier.price}</span><span class="price-period">one-time</span>`;
-    } else {
-      priceDisplay = `<span class="price-amount">$${tier.price}</span><span class="price-period">/${tier.period}</span>`;
-    }
-
-    return `
-      <div class="tier-card ${isPopular ? 'popular' : ''} ${isBestValue ? 'best-value' : ''} ${isCurrent ? 'current' : ''}" data-tier="${tierId}">
-        ${isBestValue ? '<div class="tier-badge">Best Value</div>' : ''}
-        ${isPopular ? '<div class="tier-badge popular-badge">Most Popular</div>' : ''}
-
-        <h3 class="tier-name">${tier.name}</h3>
-        <p class="tier-description">${tier.description}</p>
-
-        <div class="tier-price">
-          ${priceDisplay}
-        </div>
-
-        <ul class="tier-features">
-          ${tier.features.map(f => `<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>${f}</li>`).join('')}
-        </ul>
-
-        <button class="btn ${tierId === 'lifetime' ? 'btn-accent' : tierId === 'pro' ? 'btn-primary' : 'btn-secondary'} btn-block tier-cta" data-tier="${tierId}" ${isCurrent ? 'disabled' : ''}>
-          ${isCurrent ? 'Current Plan' : tier.cta}
-        </button>
-      </div>
-    `;
-  }
-
-  /**
-   * Attach event listeners
+   * Attach event listeners.
    * @private
    */
   _attachListeners() {
     // Close button
-    this.modal.querySelector('#pricing-close')?.addEventListener('click', () => {
-      this.hide();
+    this.modal.querySelector('#pricing-modal-close')?.addEventListener('click', () => {
+      this.close();
     });
 
-    // Click overlay to close
-    this.modal.querySelector('.pricing-overlay')?.addEventListener('click', (e) => {
-      if (e.target.dataset.close) {
-        this.hide();
-      }
-    });
-
-    // Tier CTA buttons
+    // Tier selection buttons
     this.modal.querySelectorAll('.tier-cta').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const tier = e.target.dataset.tier;
-        this._handleUpgrade(tier);
+        this._handleTierSelect(tier);
       });
     });
 
-    // Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) {
-        this.hide();
+    // Click outside to close
+    this.modal.addEventListener('click', (e) => {
+      if (e.target === this.modal) {
+        this.close();
       }
     });
   }
 
   /**
-   * Handle upgrade click
+   * Handle tier selection.
    * @private
    */
-  _handleUpgrade(tierId) {
-    console.log(`[BRK-PRICING-001] Upgrade requested: ${tierId}`);
+  _handleTierSelect(tierId) {
+    console.log('[BRK-PRICING-001] Tier selected:', tierId);
 
-    if (this.config.onUpgrade) {
-      this.config.onUpgrade(tierId, PRICING_TIERS[tierId.toUpperCase()]);
-    } else {
-      // Default behavior: open Gumroad or payment page
-      const tier = PRICING_TIERS[tierId.toUpperCase()];
-      if (tier.price > 0) {
-        // Placeholder - replace with actual payment URL
-        window.open(`https://864zeros.gumroad.com/${this.config.productName.toLowerCase()}-${tierId}`, '_blank');
-      }
+    const tier = PRICING_TIERS[tierId.toUpperCase()];
+
+    if (this.config.onSelectTier) {
+      this.config.onSelectTier(tier);
     }
+
+    // For free tier, just close
+    if (tierId === 'free') {
+      this.close();
+      return;
+    }
+
+    // For paid tiers, dispatch event for payment flow
+    window.dispatchEvent(new CustomEvent('pricing:select', {
+      detail: { tier, tierId }
+    }));
   }
 }
 
 /**
- * Standard Pricing Modal CSS
+ * Standard Pricing Modal HTML Template
  */
-export const PRICING_MODAL_CSS = `
-/* BRK-PRICING-001 Pricing Modal */
-.pricing-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.pricing-modal.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.pricing-overlay {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.pricing-container {
-  background: var(--bg-primary, #0a0a0f);
-  border: 1px solid var(--border-color, #2a2a3a);
-  border-radius: 12px;
-  max-width: 900px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.pricing-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color, #2a2a3a);
-}
-
-.pricing-brand {
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-}
-
-.brand-logo {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--accent-primary, #00d084);
-}
-
-.brand-name {
-  font-size: 24px;
-  font-weight: 300;
-  color: var(--text-primary, #f0f0f5);
-}
-
-.pricing-mission {
-  text-align: center;
-  padding: 24px;
-  color: var(--text-secondary, #a0a0b0);
-  font-size: 14px;
-  border-bottom: 1px solid var(--border-color, #2a2a3a);
-}
-
-.pricing-tiers {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 24px;
-}
-
-.tier-card {
-  background: var(--bg-secondary, #12121a);
-  border: 1px solid var(--border-color, #2a2a3a);
-  border-radius: 12px;
-  padding: 24px;
-  position: relative;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.tier-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent-primary, #00d084);
-}
-
-.tier-card.best-value {
-  border-color: var(--accent-primary, #00d084);
-  box-shadow: 0 0 30px rgba(0, 208, 132, 0.15);
-}
-
-.tier-card.popular {
-  border-color: var(--status-info, #4080f0);
-}
-
-.tier-badge {
-  position: absolute;
-  top: -10px;
-  right: 20px;
-  background: var(--accent-primary, #00d084);
-  color: var(--bg-primary, #0a0a0f);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-
-.tier-badge.popular-badge {
-  background: var(--status-info, #4080f0);
-  color: white;
-}
-
-.tier-name {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: var(--text-primary, #f0f0f5);
-}
-
-.tier-description {
-  font-size: 13px;
-  color: var(--text-secondary, #a0a0b0);
-  margin-bottom: 16px;
-}
-
-.tier-price {
-  margin-bottom: 20px;
-}
-
-.price-amount {
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--text-primary, #f0f0f5);
-}
-
-.price-period {
-  font-size: 14px;
-  color: var(--text-muted, #606070);
-  margin-left: 4px;
-}
-
-.tier-features {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 24px 0;
-}
-
-.tier-features li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-secondary, #a0a0b0);
-  padding: 6px 0;
-}
-
-.tier-features svg {
-  color: var(--accent-primary, #00d084);
-  flex-shrink: 0;
-}
-
-.tier-cta {
-  width: 100%;
-}
-
-.btn-accent {
-  background: var(--accent-primary, #00d084);
-  color: var(--bg-primary, #0a0a0f);
-  font-weight: 600;
-}
-
-.btn-accent:hover {
-  background: var(--accent-hover, #00f09a);
-}
-
-.pricing-trust {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px;
-  color: var(--accent-primary, #00d084);
-  font-size: 13px;
-  border-top: 1px solid var(--border-color, #2a2a3a);
-}
-
-.pricing-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border-color, #2a2a3a);
-  text-align: center;
-}
-
-.pricing-footer .footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 12px;
-}
-
-.pricing-footer .footer-links a {
-  color: var(--text-muted, #606070);
-  text-decoration: none;
-}
-
-.pricing-footer .footer-links a:hover {
-  color: var(--accent-primary, #00d084);
-}
-
-.pricing-footer .footer-links span {
-  color: var(--text-muted, #606070);
-}
-
-.pricing-footer .footer-copyright {
-  font-size: 11px;
-  color: var(--text-muted, #606070);
-}
-
-.tier-card.current .tier-cta {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+export const PRICING_MODAL_HTML = `
+<!-- Pricing Modal (BRK-PRICING-001) -->
+<div class="pricing-modal hidden" id="pricing-modal"></div>
 `;
 
 /**
- * Inject pricing CSS into document
+ * Quick upgrade banner component
  */
-export function injectPricingCSS() {
-  if (document.getElementById('brk-pricing-001-css')) return;
+export function generateUpgradeBanner(productName, competitorPrice) {
+  const savings = competitorPrice - (PRICING_TIERS.PRO.price * 12);
 
-  const style = document.createElement('style');
-  style.id = 'brk-pricing-001-css';
-  style.textContent = PRICING_MODAL_CSS;
-  document.head.appendChild(style);
+  return `
+    <div class="upgrade-banner">
+      <div class="upgrade-content">
+        <div class="upgrade-text">
+          <strong>Upgrade to Pro</strong>
+          <span class="text-secondary">Save $${savings}/year vs ${productName}</span>
+        </div>
+        <button class="btn btn-primary btn-sm" id="upgrade-btn">
+          $${PRICING_TIERS.PRO.price}/mo
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 export default PricingModalController;
