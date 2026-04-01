@@ -19,13 +19,25 @@ Usage:
     signals = manager.scrape_all("1Password")
 """
 
-from .base import BaseScraper, Signal, ScraperConfig
+from .base import (
+    BaseScraper,
+    Signal,
+    ScraperConfig,
+    Platform,
+    Engagement,
+    Author,
+    SignalSeverity,
+)
 from .manager import ScraperManager
 
 __all__ = [
     "BaseScraper",
     "Signal",
     "ScraperConfig",
+    "Platform",
+    "Engagement",
+    "Author",
+    "SignalSeverity",
     "ScraperManager",
 ]
 
